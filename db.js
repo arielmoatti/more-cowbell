@@ -1,17 +1,17 @@
 var spicedPg = require("spiced-pg");
 
-var db = spicedPg("postgres:postgres:postgres@localhost:5432/actors");
+var db = spicedPg("postgres:postgres:postgres@localhost:5432/petition");
 
-module.exports.getActors = () => {
-    return db.query(`SELECT * FROM actors`);
+module.exports.getSigners = () => {
+    return db.query(`SELECT * FROM signatures`);
 };
 
-module.exports.addActor = (name, age) => {
+module.exports.addSigner = (firstName, lastName, subscribed) => {
     return db.query(
         `
-        INSERT INTO actors (name, age)
-        VALUES ($1, $2)
+        INSERT INTO signatures (first, last, signature)
+        VALUES ($1, $2, $3)
         `,
-        [name, age]
+        [firstName, lastName, subscribed]
     );
 };
