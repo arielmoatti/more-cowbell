@@ -1,6 +1,6 @@
 var spicedPg = require("spiced-pg");
 
-var db = spicedPg("postgres:postgres:postgres@localhost:5432/petition");
+var db = spicedPg("postgres:arielmo:postgres@localhost:5432/petition");
 
 module.exports.getSigners = () => {
     return db.query(`SELECT * FROM signatures`);

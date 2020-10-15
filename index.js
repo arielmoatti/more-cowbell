@@ -1,7 +1,22 @@
+//~~~~ IMPORTS
 const express = require("express");
 const app = express();
 const db = require("./db");
 const cookieParser = require("cookie-parser");
+const hb = require("express-handlebars");
+
+//added global helpers-----------
+const hbSet = hb.create({
+    helpers: {
+        someFn() {
+            return "something";
+        },
+    },
+});
+//-------------
+
+app.engine("handlebars", hbSet.engine);
+app.set("view engine", "handlebars");
 
 //~~~~~~~~~MIDDLEWARE
 app.use(
@@ -19,6 +34,8 @@ app.get("/", (req, res) => {
 });
 
 app.get("/petition", (req, res) => {
+    res.render("home", {});
+    /*
     res.send(`
 <h1>Please sign up for my petition!</h1>
         <form method='POST' style="display: flex; flex-direction: column; justify-content: space-between; width: 20%; height: 50%;">
@@ -30,6 +47,7 @@ app.get("/petition", (req, res) => {
             <button> submit </submit>
         </form>
     `);
+    */
 });
 
 app.get("/signerslist", (req, res) => {
@@ -38,11 +56,17 @@ app.get("/signerslist", (req, res) => {
             console.log("results:", rows);
             // rows.forEach((signer) => {
             let signersList = "";
+            /*
             for (let i = 0; i < rows.length; i++) {
                 // res.send(`<h2>${rows[i].first} ${rows[i].last}</h2>`);
                 signersList += `<h2>${rows[i].first} ${rows[i].last}</h2>`;
             }
-            res.send(`${signersList}`);
+            */
+            res.render("signerslist", {
+                rows,
+                signersList,
+            });
+            // res.send(`${signersList}`);
             // });
         })
         .catch((err) => {
@@ -53,6 +77,7 @@ app.get("/signerslist", (req, res) => {
 
 let currentFirst,
     currentLast = "";
+
 app.post("/petition", (req, res) => {
     const { firstname, lastname, subscribe } = req.body;
     currentFirst = firstname;
@@ -73,9 +98,14 @@ app.post("/petition", (req, res) => {
 });
 
 app.get("/thank-you", (req, res) => {
-    res.send(`
+    res.render("thankyou", {
+        currentFirst,
+        currentLast,
+    });
+    /*res.send(`
         <p style="font-size: 30">thank you, <span style="color: green; font-weight: bold">${currentFirst} ${currentLast}, </span>for signing my petition!</p>
         `);
+        */
 });
 //
 //
