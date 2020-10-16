@@ -6,6 +6,9 @@ module.exports.getSigners = () => {
     return db.query(`SELECT * FROM signatures`);
 };
 
+module.exports.countSigners = () => {
+    return db.query(`SELECT COUNT(*) FROM signatures`);
+};
 module.exports.getCurrentSigner = (cookie) => {
     return db.query(`SELECT * FROM signatures WHERE id=${cookie}`);
 };

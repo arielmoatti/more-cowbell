@@ -95,3 +95,9 @@ input {
     align-self: center;
     color: #ccc5b9;
 }
+
+canvas {
+    height: 100px;
+    width: 400px;
+    border: 1px solid black;
+}

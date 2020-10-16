@@ -4,6 +4,7 @@ const app = express();
 const db = require("./db");
 const hb = require("express-handlebars");
 const cookieSession = require("cookie-session");
+const csurf = require("csurf");
 
 //added global helpers-----------
 const hbSet = hb.create({
@@ -32,6 +33,14 @@ app.use(
     })
 );
 
+app.use(csurf());
+
+app.use(function (req, res, next) {
+    res.locals.csrfToken = req.csrfToken();
+    res.set("x-frame-options", "DENY");
+    next();
+});
+
 app.use(express.static("./public"));
 
 //~~~~ ROUTES
@@ -40,7 +49,12 @@ app.get("/", (req, res) => {
 });
 
 app.get("/petition", (req, res) => {
-    res.render("home");
+    const { signatureId } = req.session;
+    if (!signatureId) {
+        res.render("home");
+    } else {
+        res.redirect("/thank-you");
+    }
 });
 
 app.get("/signerslist", (req, res) => {
@@ -48,10 +62,9 @@ app.get("/signerslist", (req, res) => {
     if (signatureId) {
         db.getSigners()
             .then(({ rows }) => {
-                let signersList = "";
+                // let signersList = "";
                 res.render("signerslist", {
                     rows,
-                    signersList,
                 });
             })
             .catch((err) => {
@@ -64,25 +77,38 @@ app.get("/signerslist", (req, res) => {
 
 app.post("/petition", (req, res) => {
     const { firstname, lastname, signature } = req.body;
-    db.addSigner(`${firstname}`, `${lastname}`, `${signature}`)
-        .then((results) => {
-            //set cookie
-            req.session.signatureId = results.rows[0].id;
-            console.log("added new signer!");
-            res.redirect("/thank-you");
-        })
-        .catch((err) => {
-            console.log("error in POST /petition", err);
+    if (firstname !== "" && lastname !== "" && signature !== "") {
+        db.addSigner(`${firstname}`, `${lastname}`, `${signature}`)
+            .then((results) => {
+                //set cookie
+                req.session.signatureId = results.rows[0].id;
+                console.log("added new signer!");
+                res.redirect("/thank-you");
+            })
+            .catch((err) => {
+                console.log("error in POST /petition", err);
+            });
+    } else {
+        res.render("home", {
+            unfilled: true,
         });
+        // $("#errmsg").addClass("on");
+        // res.end();
+        // res.send("<h1>you cannot leave empty fields!</h1>");
+    }
 });
 
 app.get("/thank-you", (req, res) => {
     const { signatureId } = req.session;
     if (signatureId) {
-        db.getCurrentSigner(signatureId).then((results) => {
-            // console.log("results", results);
-            res.render("thankyou", {
-                results,
+        db.countSigners().then((counts) => {
+            const numberOfSigners = counts.rows[0].count;
+            db.getCurrentSigner(signatureId).then(({ rows }) => {
+                // console.log("results", results);
+                res.render("thankyou", {
+                    rows,
+                    numberOfSigners,
+                });
             });
         });
     } else {
