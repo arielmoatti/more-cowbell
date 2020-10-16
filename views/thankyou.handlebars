@@ -1,14 +1,13 @@
 <div class="thankyou">
     {{#rows}}
-    <p>
-        {{!-- thank you, {{results.rows.[0].first}} {{results.rows.[0].last}}, for signing my petition! --}}
+    <h2>
         thank you, {{first}} {{last}}, for signing my petition! 
-    </p>
+    </h2>
     {{/rows}}    
-    <p>{{numberOfSigners}}</p>
+    <p>{{numberOfSigners}} people have so far signed this petition!</p>
     <div class="container">
-        <p>want to see who else signed so far?</p>
-        <p>click the button to find out...</p>
-        <a href="/signerslist" id="listBtn">Signers List</a>
+        <p>want to see who else signed so far?<br>
+        click the button to find out...</p>
+        <a href="/signerslist" id="listBtn">signers list</a>
     </div>
 </div>

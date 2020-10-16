@@ -62,7 +62,6 @@ app.get("/signerslist", (req, res) => {
     if (signatureId) {
         db.getSigners()
             .then(({ rows }) => {
-                // let signersList = "";
                 res.render("signerslist", {
                     rows,
                 });
@@ -82,7 +81,7 @@ app.post("/petition", (req, res) => {
             .then((results) => {
                 //set cookie
                 req.session.signatureId = results.rows[0].id;
-                console.log("added new signer!");
+                // console.log("added new signer!");
                 res.redirect("/thank-you");
             })
             .catch((err) => {
@@ -92,9 +91,6 @@ app.post("/petition", (req, res) => {
         res.render("home", {
             unfilled: true,
         });
-        // $("#errmsg").addClass("on");
-        // res.end();
-        // res.send("<h1>you cannot leave empty fields!</h1>");
     }
 });
 
@@ -104,7 +100,6 @@ app.get("/thank-you", (req, res) => {
         db.countSigners().then((counts) => {
             const numberOfSigners = counts.rows[0].count;
             db.getCurrentSigner(signatureId).then(({ rows }) => {
-                // console.log("results", results);
                 res.render("thankyou", {
                     rows,
                     numberOfSigners,

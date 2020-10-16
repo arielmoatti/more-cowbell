@@ -56,8 +56,13 @@ a {
 }
 
 .home,
-.signers {
+.signers,
+.thankyou {
     height: 60vh;
+    display: flex;
+    flex-direction: column;
+    /* justify-items: center; */
+    align-items: center;
     /* padding: 50px; */
 }
 
@@ -74,6 +79,8 @@ p {
     display: flex;
     justify-content: center;
     flex-direction: column;
+    /* align-items: center; */
+    width: 50vw;
     /* padding: 10px; */
 }
 
@@ -94,10 +101,12 @@ input {
     background-color: #22241f;
     align-self: center;
     color: #ccc5b9;
+    border-radius: 5px;
 }
 
 canvas {
     height: 100px;
-    width: 400px;
+    width: 80%;
     border: 1px solid black;
+    margin: 20px;
 }
