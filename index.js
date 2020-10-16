@@ -2,8 +2,8 @@
 const express = require("express");
 const app = express();
 const db = require("./db");
-const cookieParser = require("cookie-parser");
 const hb = require("express-handlebars");
+const cookieSession = require("cookie-session");
 
 //added global helpers-----------
 const hbSet = hb.create({
@@ -20,6 +20,13 @@ app.set("view engine", "handlebars");
 
 //~~~~~~~~~MIDDLEWARE
 app.use(
+    cookieSession({
+        secret: `we need more cowbell!`,
+        maxAge: 1000 * 60 * 60 * 24 * 14,
+    })
+);
+
+app.use(
     express.urlencoded({
         extended: false,
     })
@@ -29,68 +36,40 @@ app.use(express.static("./public"));
 
 //~~~~ ROUTES
 app.get("/", (req, res) => {
-    // console.log("get request to / route has just happend");
     res.redirect("/petition");
 });
 
 app.get("/petition", (req, res) => {
-    res.render("home", {});
-    /*
-    res.send(`
-<h1>Please sign up for my petition!</h1>
-        <form method='POST' style="display: flex; flex-direction: column; justify-content: space-between; width: 20%; height: 50%;">
-            <input type='text' required name='firstname' placeholder='First Name' autocomplete='off'>
-            <input type='text' required name='lastname' placeholder='Last Name' autocomplete='off'>            
-            <div>
-                <input type="checkbox" name="subscribe"><span>Please check this box to add your acceptance</span>
-            </div>
-            <button> submit </submit>
-        </form>
-    `);
-    */
+    res.render("home");
 });
 
 app.get("/signerslist", (req, res) => {
-    db.getSigners()
-        .then(({ rows }) => {
-            console.log("results:", rows);
-            // rows.forEach((signer) => {
-            let signersList = "";
-            /*
-            for (let i = 0; i < rows.length; i++) {
-                // res.send(`<h2>${rows[i].first} ${rows[i].last}</h2>`);
-                signersList += `<h2>${rows[i].first} ${rows[i].last}</h2>`;
-            }
-            */
-            res.render("signerslist", {
-                rows,
-                signersList,
+    const { signatureId } = req.session;
+    if (signatureId) {
+        db.getSigners()
+            .then(({ rows }) => {
+                let signersList = "";
+                res.render("signerslist", {
+                    rows,
+                    signersList,
+                });
+            })
+            .catch((err) => {
+                console.log("error in /signerslist", err);
             });
-            // res.send(`${signersList}`);
-            // });
-        })
-        .catch((err) => {
-            console.log("error in /signerslist", err);
-        });
-    // res.send("check your terminal...");
+    } else {
+        res.redirect("/petition");
+    }
 });
 
-let currentFirst,
-    currentLast = "";
-
 app.post("/petition", (req, res) => {
-    const { firstname, lastname, subscribe } = req.body;
-    currentFirst = firstname;
-    currentLast = lastname;
-    db.addSigner(`${firstname}`, `${lastname}`, `${subscribe}`)
-        .then(() => {
+    const { firstname, lastname, signature } = req.body;
+    db.addSigner(`${firstname}`, `${lastname}`, `${signature}`)
+        .then((results) => {
+            //set cookie
+            req.session.signatureId = results.rows[0].id;
             console.log("added new signer!");
             res.redirect("/thank-you");
-            /*
-            res.send(`
-        <p style="font-size: 30">thank you, <span style="color: green; font-weight: bold">${firstname} ${lastname}, </span>for signing my petition!</p>
-        `);
-        */
         })
         .catch((err) => {
             console.log("error in POST /petition", err);
@@ -98,14 +77,17 @@ app.post("/petition", (req, res) => {
 });
 
 app.get("/thank-you", (req, res) => {
-    res.render("thankyou", {
-        currentFirst,
-        currentLast,
-    });
-    /*res.send(`
-        <p style="font-size: 30">thank you, <span style="color: green; font-weight: bold">${currentFirst} ${currentLast}, </span>for signing my petition!</p>
-        `);
-        */
+    const { signatureId } = req.session;
+    if (signatureId) {
+        db.getCurrentSigner(signatureId).then((results) => {
+            // console.log("results", results);
+            res.render("thankyou", {
+                results,
+            });
+        });
+    } else {
+        res.redirect("/petition");
+    }
 });
 //
 //
