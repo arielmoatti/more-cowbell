@@ -6,6 +6,12 @@ const hb = require("express-handlebars");
 const cookieSession = require("cookie-session");
 const csurf = require("csurf");
 
+// db.getTimestamp().then((result) => {
+//     console.log("result", result);
+// });
+
+// console.log("db.getTimestamp()", db.getTimestamp());
+
 //added global helpers-----------
 const hbSet = hb.create({
     helpers: {
@@ -57,23 +63,6 @@ app.get("/petition", (req, res) => {
     }
 });
 
-app.get("/signerslist", (req, res) => {
-    const { signatureId } = req.session;
-    if (signatureId) {
-        db.getSigners()
-            .then(({ rows }) => {
-                res.render("signerslist", {
-                    rows,
-                });
-            })
-            .catch((err) => {
-                console.log("error in /signerslist", err);
-            });
-    } else {
-        res.redirect("/petition");
-    }
-});
-
 app.post("/petition", (req, res) => {
     const { firstname, lastname, signature } = req.body;
     if (firstname !== "" && lastname !== "" && signature !== "") {
@@ -110,6 +99,24 @@ app.get("/thank-you", (req, res) => {
         res.redirect("/petition");
     }
 });
+
+app.get("/signerslist", (req, res) => {
+    const { signatureId } = req.session;
+    if (signatureId) {
+        db.getSigners()
+            .then(({ rows }) => {
+                res.render("signerslist", {
+                    rows,
+                });
+            })
+            .catch((err) => {
+                console.log("error in /signerslist", err);
+            });
+    } else {
+        res.redirect("/petition");
+    }
+});
+
 //
 //
 //

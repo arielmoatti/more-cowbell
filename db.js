@@ -6,9 +6,20 @@ module.exports.getSigners = () => {
     return db.query(`SELECT * FROM signatures`);
 };
 
+/*
+module.exports.getTimestamp = () => {
+    let date = db.query(`SELECT EXTRACT (DAY FROM created) FROM signatures`);
+    date += db.query(`SELECT EXTRACT (MONTH FROM created) FROM signatures`);
+    date += db.query(`SELECT EXTRACT (YEAR FROM created) FROM signatures`);
+    return date;
+};
+// return db.query(`SELECT EXTRACT (DAY FROM created) FROM signatures`);
+*/
+
 module.exports.countSigners = () => {
     return db.query(`SELECT COUNT(*) FROM signatures`);
 };
+
 module.exports.getCurrentSigner = (cookie) => {
     return db.query(`SELECT * FROM signatures WHERE id=${cookie}`);
 };

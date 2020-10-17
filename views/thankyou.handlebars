@@ -3,11 +3,12 @@
     <h2>
         thank you, {{first}} {{last}}, for signing my petition! 
     </h2>
+    <p>with your signature below, you are a registered signer of my petition!</p>
+    <img id="signature" src="{{signature}}" alt="signature">
     {{/rows}}    
-    <p>{{numberOfSigners}} people have so far signed this petition!</p>
     <div class="container">
-        <p>want to see who else signed so far?<br>
-        click the button to find out...</p>
+    <p>want to see the other {{numberOfSigners}} people who signed this petition?<br>
+        then click the below to find out...</p>
         <a href="/signerslist" id="listBtn">signers list</a>
     </div>
 </div>

@@ -58,9 +58,10 @@ a {
 .home,
 .signers,
 .thankyou {
-    height: 60vh;
+    height: 70vh;
     display: flex;
     flex-direction: column;
+    overflow: auto;
     /* justify-items: center; */
     align-items: center;
     /* padding: 50px; */
@@ -109,4 +110,44 @@ canvas {
     width: 80%;
     border: 1px solid black;
     margin: 20px;
+}
+
+.partial {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* width: 60%; */
+    /* height: 100px; */
+    overflow: visible;
+    padding: 50px;
+    border: 1px solid tomato;
+    position: absolute;
+    /* top: calc(0% - 300px); */
+    top: 280px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 5px;
+    background-color: whitesmoke;
+    box-shadow: 5px 5px 10px #000000;
+}
+
+.partial h3 {
+    color: tomato;
+    /* padding: 1rem; */
+}
+
+.partial a {
+    padding: 0.5rem;
+    margin-top: 3rem;
+    background-color: tomato;
+    /* align-self: center; */
+    color: whitesmoke;
+    border-radius: 5px;
+}
+
+.partial a:hover {
+    background-color: grey;
+    color: black;
+    transition: 400ms;
 }
