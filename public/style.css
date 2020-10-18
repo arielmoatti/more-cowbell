@@ -107,9 +107,10 @@ input {
 
 canvas {
     height: 100px;
-    width: 80%;
+    width: 400px;
     border: 1px solid black;
     margin: 20px;
+    background-color: whitesmoke;
 }
 
 .partial {
