@@ -1,0 +1,19 @@
+<div class="home">
+    {{#rows}}
+        <h2>Welcome back, {{first}}! Looks likes you still haven't signed the petition</h2>
+    {{/rows}}
+    <h2>If you agree, please sign your name</h2>
+    <div class="container">            
+        <form method='POST'>            
+            <div>
+                <input type="hidden" name="signature">
+                {{>csrf}}                
+                <canvas id="canvas" width="400" height="100"></canvas>
+            </div>
+            <button> submit </button>
+        </form>
+        {{#if fill_err}}
+            {{>par-signature_err}}
+        {{/if}}
+    </div>
+</div>

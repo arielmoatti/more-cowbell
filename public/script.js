@@ -8,6 +8,7 @@ if (canvas) {
     const signCanvas = document.querySelector('input[name="signature"]');
 
     canvas.addEventListener("mousedown", (e) => {
+        //shorthanded without ()
         x = e.clientX - canvas.offsetLeft;
         y = e.clientY - canvas.offsetTop;
 
@@ -19,13 +20,12 @@ if (canvas) {
     });
 
     canvas.addEventListener("mousemove", (e) => {
+        //shorthanded without ()
         x = e.clientX - canvas.offsetLeft;
         y = e.clientY - canvas.offsetTop;
     });
 
-    canvas.addEventListener("mouseup", () => {
-        drawEnd();
-    });
+    canvas.addEventListener("mouseup", () => drawEnd()); //shorthanded without {}
 
     drawStart = () => {
         context.strokeStyle = "cornflowerblue";

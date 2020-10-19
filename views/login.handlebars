@@ -1,0 +1,20 @@
+<div class="login">
+    <h1>existing user log in</h1>
+    <div class="container">            
+        <form method='POST'>
+            <div>
+                <input type='email' name='email' placeholder='Email Address' autocomplete='off'>
+                <input type='password' name='password' placeholder='Password' autocomplete='off'>            
+                {{>csrf}}
+            </div>
+            <button> log in! </button>
+        </form>
+        <p>not yet registered? then please go ahead and <a href="/register">register</a></p>
+        {{#if fill_err}}
+            {{>par-login_err}}
+        {{/if}}
+        {{#if credent_err}}
+            {{>par-login_credent_err}}
+        {{/if}}
+    </div>
+</div>

@@ -5,6 +5,7 @@ const db = require("./db");
 const hb = require("express-handlebars");
 const cookieSession = require("cookie-session");
 const csurf = require("csurf");
+const { hash, compare } = require("./bc");
 
 // db.getTimestamp().then((result) => {
 //     console.log("result", result);
@@ -51,44 +52,54 @@ app.use(express.static("./public"));
 
 //~~~~ ROUTES
 app.get("/", (req, res) => {
-    res.redirect("/petition");
+    res.redirect("/register");
 });
 
 app.get("/petition", (req, res) => {
-    const { signatureId } = req.session;
-    if (!signatureId) {
-        res.render("home");
+    const { signed, userId } = req.session;
+    if (userId) {
+        if (signed) {
+            res.redirect("/thank-you");
+        } else {
+            db.getCurrentSigner(userId).then(({ rows }) => {
+                res.render("petition", {
+                    rows,
+                    //fill_err: true,
+                });
+            });
+        }
     } else {
-        res.redirect("/thank-you");
+        res.redirect("/register");
     }
 });
 
 app.post("/petition", (req, res) => {
-    const { firstname, lastname, signature } = req.body;
-    if (firstname !== "" && lastname !== "" && signature !== "") {
-        db.addSigner(`${firstname}`, `${lastname}`, `${signature}`)
+    const { userId } = req.session;
+    const { signature } = req.body;
+    if (signature !== "") {
+        db.addSignature(userId, signature)
             .then((results) => {
                 //set cookie
-                req.session.signatureId = results.rows[0].id;
-                // console.log("added new signer!");
+                req.session.signed = true;
+                console.log("user has finally signed!");
                 res.redirect("/thank-you");
             })
             .catch((err) => {
-                console.log("error in POST /petition", err);
+                console.log("error in POST /petition addSignature()", err);
             });
     } else {
-        res.render("home", {
-            unfilled: true,
+        res.render("petition", {
+            fill_err: true,
         });
     }
 });
 
 app.get("/thank-you", (req, res) => {
-    const { signatureId } = req.session;
-    if (signatureId) {
+    const { signed, userId } = req.session;
+    if (signed) {
         db.countSigners().then((counts) => {
             const numberOfSigners = counts.rows[0].count;
-            db.getCurrentSigner(signatureId).then(({ rows }) => {
+            db.getSignature(userId).then(({ rows }) => {
                 res.render("thankyou", {
                     rows,
                     numberOfSigners,
@@ -99,7 +110,7 @@ app.get("/thank-you", (req, res) => {
         res.redirect("/petition");
     }
 });
-
+/*
 app.get("/signerslist", (req, res) => {
     const { signatureId } = req.session;
     if (signatureId) {
@@ -116,10 +127,112 @@ app.get("/signerslist", (req, res) => {
         res.redirect("/petition");
     }
 });
+*/
 
-//
-//
-//
-//
+app.get("/register", (req, res) => {
+    const { userId } = req.session;
+    if (userId) {
+        res.redirect("petition");
+    } else {
+        res.render("register", {});
+    }
+});
 
+app.post("/register", (req, res) => {
+    const { firstname, lastname, email, password } = req.body;
+    console.log(firstname, lastname, email, password);
+    if (
+        firstname !== "" &&
+        lastname !== "" &&
+        email !== "" &&
+        password !== ""
+    ) {
+        hash(password)
+            .then((hashedPw) => {
+                console.log("hashedPw", hashedPw);
+                //invoke the new db function to add user with all 4 fields
+                db.createUser(firstname, lastname, email, hashedPw)
+                    .then((results) => {
+                        //set cookie
+                        req.session.userId = results.rows[0].id;
+                        console.log("a new user was added!");
+                        res.redirect("/petition");
+                    })
+                    .catch((err) => {
+                        console.log("error in POST /register", err);
+                        res.render(
+                            "<h1>Server error: user could NOT be added to db</h1>"
+                        );
+                    });
+            })
+            .catch((err) => {
+                console.log("error is POST /register hash()", err);
+                res.render(
+                    "<h1>Server error: your password could NOT be hashed</h1>"
+                );
+            });
+    } else {
+        res.render("register", {
+            fill_err: true,
+        });
+    }
+});
+
+app.get("/login", (req, res) => {
+    const { userId } = req.session;
+    if (userId) {
+        res.redirect("petition");
+    } else {
+        res.render("login", {});
+    }
+});
+
+app.post("/login", (req, res) => {
+    const { email, password } = req.body;
+    console.log(
+        "user input email: ",
+        email,
+        " user input password: ",
+        password
+    );
+    if (email !== "" && password !== "") {
+        db.getPasswordByEmail(email)
+            .then((results) => {
+                // console.log("from getPasswordByEmail > results: ", results);
+                const hashedPw = results.rows[0].password;
+                console.log("from getPasswordByEmail > hashedPw: ", hashedPw);
+                compare(password, hashedPw)
+                    .then((match) => {
+                        console.log(
+                            "user input password matches the hash? ",
+                            match
+                        );
+                        if (match) {
+                            req.session.userId = results.rows[0].id; //set cookie
+                            res.redirect("/petition");
+                        } else {
+                            res.render("login", {
+                                credent_err: true,
+                            });
+                        }
+                    })
+                    .catch((err) => {
+                        console.log("error in POST /login compare():", err);
+                        res.render(
+                            "<h1>Server error: your password does NOT match</h1>"
+                        );
+                    });
+            })
+            .catch((err) => {
+                console.log("error in POST /login getPasswordByEmail():", err);
+                res.render("login", {
+                    credent_err: true,
+                });
+            });
+    } else {
+        res.render("login", {
+            fill_err: true,
+        });
+    }
+});
 app.listen(8080, () => console.log("petition SERVER at 8080..."));

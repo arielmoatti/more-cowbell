@@ -1,9 +1,48 @@
 var spicedPg = require("spiced-pg");
-
 var db = spicedPg("postgres:postgres:postgres@localhost:5432/petition");
 
 module.exports.getSigners = () => {
     return db.query(`SELECT * FROM signatures`);
+};
+
+module.exports.countSigners = () => {
+    return db.query(`SELECT COUNT(*) FROM signatures`);
+};
+
+module.exports.getCurrentSigner = (userId) => {
+    return db.query(`SELECT * FROM users WHERE id=$1`, [userId]);
+};
+
+module.exports.getSignature = (userId) => {
+    return db.query(`SELECT signature FROM signatures WHERE user_id=$1`, [
+        userId,
+    ]);
+};
+
+module.exports.addSignature = (userId, canvaSignature) => {
+    return db.query(
+        `
+        INSERT INTO signatures (user_id, signature)
+        VALUES ($1, $2)
+        `,
+        [userId, canvaSignature]
+    );
+};
+
+module.exports.createUser = (firstname, lastname, email, hashedPw) => {
+    return db.query(
+        `
+        INSERT INTO users (first, last, email, password)
+        VALUES ($1, $2, $3, $4)
+        RETURNING id
+        `,
+        [firstname, lastname, email, hashedPw]
+    );
+};
+
+module.exports.getPasswordByEmail = (inputEmail) => {
+    return db.query(`SELECT * FROM users WHERE email=$1`, [inputEmail]);
+    // return db.query(`SELECT * FROM users WHERE email=$1`, [inputEmail]);
 };
 
 /*
@@ -15,22 +54,3 @@ module.exports.getTimestamp = () => {
 };
 // return db.query(`SELECT EXTRACT (DAY FROM created) FROM signatures`);
 */
-
-module.exports.countSigners = () => {
-    return db.query(`SELECT COUNT(*) FROM signatures`);
-};
-
-module.exports.getCurrentSigner = (cookie) => {
-    return db.query(`SELECT * FROM signatures WHERE id=${cookie}`);
-};
-
-module.exports.addSigner = (firstName, lastName, signature) => {
-    return db.query(
-        `
-        INSERT INTO signatures (first, last, signature)
-        VALUES ($1, $2, $3)
-        RETURNING *
-        `,
-        [firstName, lastName, signature]
-    );
-};

@@ -6,8 +6,7 @@
             <input type='text' name='lastname' placeholder='Last Name' autocomplete='off'>            
             <div>
                 <input type="hidden" name="signature">
-                <input type="hidden" name="_csrf" value="{{csrfToken}}">
-                {{!-- maybe put the csrf in partial --}}
+                {{>csrf}}                
                 <canvas id="canvas" width="400" height="100"></canvas></canvas>
 
             </div>
