@@ -1,6 +1,7 @@
 <div class="home">
     {{#rows}}
-        <h2>Welcome back, {{first}}! Looks likes you still haven't signed the petition</h2>
+        <h2>Welcome back, {{first}}!</h2>
+        <h3>Looks likes you haven't yet signed the petition</h3>
     {{/rows}}
     <h2>If you agree, please sign your name</h2>
     <div class="container">            
@@ -8,9 +9,9 @@
             <div>
                 <input type="hidden" name="signature">
                 {{>csrf}}                
-                <canvas id="canvas" width="400" height="100"></canvas>
+                <canvas id="canvas" width="500" height="150"></canvas>
             </div>
-            <button> submit </button>
+            <button type="submit">sign up</button>
         </form>
         {{#if fill_err}}
             {{>par-signature_err}}

@@ -99,10 +99,14 @@ app.get("/thank-you", (req, res) => {
     if (signed) {
         db.countSigners().then((counts) => {
             const numberOfSigners = counts.rows[0].count;
-            db.getSignature(userId).then(({ rows }) => {
-                res.render("thankyou", {
-                    rows,
-                    numberOfSigners,
+            db.getSignature(userId).then((results) => {
+                const signature = results.rows[0].signature;
+                db.getCurrentSigner(userId).then(({ rows }) => {
+                    res.render("thankyou", {
+                        rows,
+                        signature,
+                        numberOfSigners,
+                    });
                 });
             });
         });
@@ -110,10 +114,10 @@ app.get("/thank-you", (req, res) => {
         res.redirect("/petition");
     }
 });
-/*
+
 app.get("/signerslist", (req, res) => {
-    const { signatureId } = req.session;
-    if (signatureId) {
+    const { userId } = req.session;
+    if (userId) {
         db.getSigners()
             .then(({ rows }) => {
                 res.render("signerslist", {
@@ -124,10 +128,9 @@ app.get("/signerslist", (req, res) => {
                 console.log("error in /signerslist", err);
             });
     } else {
-        res.redirect("/petition");
+        res.redirect("/register");
     }
 });
-*/
 
 app.get("/register", (req, res) => {
     const { userId } = req.session;

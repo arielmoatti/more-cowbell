@@ -64,8 +64,8 @@ a {
     display: flex;
     flex-direction: column;
     overflow: auto;
-    /* justify-items: center; */
     align-items: center;
+    /* justify-items: center; */
     /* padding: 50px; */
 }
 
@@ -82,35 +82,45 @@ p {
     display: flex;
     justify-content: center;
     flex-direction: column;
-    /* align-items: center; */
+    align-items: center;
     width: 50vw;
     /* padding: 10px; */
 }
 
 form {
     /* padding: 20px; */
-    /* display: flex;
+    display: flex;
     flex-direction: column;
-    width: 20%;
-    height: 100%; */
+    align-items: center;
+    /* width: 30%; */
+
+    /* height: 100%;  */
 }
 
-input {
-    margin: 20px;
-}
-
-#listBtn {
+.myBtn,
+button[type="submit"] {
+    font-family: "Montserrat", sans-serif;
+    font-size: 18px;
     padding: 0.5rem;
     background-color: #22241f;
     align-self: center;
     color: #ccc5b9;
     border-radius: 5px;
+    cursor: pointer;
+}
+
+.myBtn:hover,
+button[type="submit"]:hover {
+    background-color: #ccc5b9;
+    color: #22241f;
+    transition: 400ms ease-in-out;
 }
 
 canvas {
-    height: 100px;
-    width: 400px;
+    height: 150px;
+    width: 500px;
     border: 1px solid black;
+    border-radius: 10px;
     margin: 20px;
     background-color: whitesmoke;
 }
@@ -153,4 +163,36 @@ canvas {
     background-color: grey;
     color: black;
     transition: 400ms;
+}
+
+input {
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    color: whitesmoke;
+    box-sizing: border-box;
+    font-family: "Montserrat", sans-serif;
+    font-size: 18px;
+    margin: 20px;
+    width: 300px;
+}
+
+:focus {
+    outline: none;
+}
+
+::placeholder {
+    color: whitesmoke;
+    opacity: 0.4;
+}
+
+:focus::placeholder {
+    opacity: 0.2;
+    color: #6f251f;
+    transition: 500ms;
+}
+
+input:-webkit-autofill {
+    -webkit-transition: "color 9999s ease-out, background-color 9999s ease-out";
+    -webkit-transition-delay: 9999s;
 }
