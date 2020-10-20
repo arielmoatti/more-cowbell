@@ -7,12 +7,6 @@ const cookieSession = require("cookie-session");
 const csurf = require("csurf");
 const { hash, compare } = require("./bc");
 
-// db.getTimestamp().then((result) => {
-//     console.log("result", result);
-// });
-
-// console.log("db.getTimestamp()", db.getTimestamp());
-
 //added global helpers-----------
 const hbSet = hb.create({
     helpers: {
@@ -56,18 +50,20 @@ app.get("/", (req, res) => {
 });
 
 app.get("/petition", (req, res) => {
-    const { signed, userId } = req.session;
+    const { userId } = req.session;
     if (userId) {
-        if (signed) {
-            res.redirect("/thank-you");
-        } else {
-            db.getCurrentSigner(userId).then(({ rows }) => {
-                res.render("petition", {
-                    rows,
-                    //fill_err: true,
+        db.getSignature(userId).then((results) => {
+            if (results.rows[0].signature) {
+                req.session.signed = true;
+                res.redirect("/thank-you");
+            } else {
+                db.getCurrentSigner(userId).then(({ rows }) => {
+                    res.render("petition", {
+                        rows,
+                    });
                 });
-            });
-        }
+            }
+        });
     } else {
         res.redirect("/register");
     }
@@ -122,6 +118,7 @@ app.get("/signerslist", (req, res) => {
     if (userId) {
         db.getSigners()
             .then(({ rows }) => {
+                console.log("rows", rows);
                 res.render("signerslist", {
                     rows,
                 });
@@ -137,7 +134,7 @@ app.get("/signerslist", (req, res) => {
 app.get("/register", (req, res) => {
     const { userId } = req.session;
     if (userId) {
-        res.redirect("petition");
+        res.redirect("/petition");
     } else {
         res.render("register", {});
     }
@@ -210,7 +207,7 @@ app.post("/register", (req, res) => {
 app.get("/login", (req, res) => {
     const { userId } = req.session;
     if (userId) {
-        res.redirect("petition");
+        res.redirect("/petition");
     } else {
         res.render("login", {});
     }
@@ -264,11 +261,15 @@ app.post("/login", (req, res) => {
 });
 
 app.get("/profile", (req, res) => {
-    const { userId } = req.session;
+    const { userId, profiled } = req.session;
     if (userId) {
-        res.render("profile", {});
+        if (profiled) {
+            res.redirect("/petition");
+        } else {
+            res.render("profile", {});
+        }
     } else {
-        res.redirect("register");
+        res.redirect("/register");
     }
 });
 
@@ -279,6 +280,7 @@ app.post("/profile", (req, res) => {
     db.addProfile(age, city, url, userId)
         .then((results) => {
             console.log("a new profile was added!");
+            req.session.profiled = true;
             res.redirect("/petition");
         })
         .catch((err) => {
