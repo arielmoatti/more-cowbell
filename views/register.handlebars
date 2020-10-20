@@ -2,18 +2,21 @@
     <h2>register to my petition!</h2>
     <div class="container">            
         <form method='POST'>
-            {{!-- <div> --}}
-                <input type='text' name='firstname' placeholder='First Name' autocomplete='off'>
-                <input type='text' name='lastname' placeholder='Last Name' autocomplete='off'>
-                <input type='email' name='email' placeholder='Email Address' autocomplete='off'>
-                <input type='password' name='password' placeholder='Password' autocomplete='off'>            
-                {{>csrf}}
-            {{!-- </div> --}}
+            <input type='text' name='firstname' placeholder='* First Name' autocomplete='off'>
+            <input type='text' name='lastname' placeholder='* Last Name' autocomplete='off'>
+            <input type='email' name='email' placeholder='* Email Address' autocomplete='off'>
+            <input type='password' name='password' placeholder='* Password' autocomplete='off'>            
+            {{>csrf}}
             <button type="submit">register now</button>
         </form>
         <p>already registered? then please <a href="/login">log in</a></p>
-        {{#if fill_err}}
-            {{>par-fill_err}}
+        
+        {{#if err}}
+            {{>errors}}
         {{/if}}
+        {{!-- {{#if fill_err}}
+            {{>par-fill_err}}
+        {{/if}} --}}
+
     </div>
 </div>

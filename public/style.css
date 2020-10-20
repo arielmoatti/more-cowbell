@@ -59,7 +59,8 @@ a {
 .signers,
 .thankyou,
 .login,
-.register {
+.register,
+.profile {
     height: 70vh;
     display: flex;
     flex-direction: column;
@@ -117,15 +118,14 @@ button[type="submit"]:hover {
 }
 
 canvas {
-    height: 150px;
-    width: 500px;
     border: 1px solid black;
     border-radius: 10px;
     margin: 20px;
-    background-color: whitesmoke;
+    background-color: oldlace;
 }
 
-.partial {
+/* .partial, */
+.errModal {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -145,12 +145,12 @@ canvas {
     box-shadow: 5px 5px 10px #000000;
 }
 
-.partial h3 {
+.errModal h3 {
     color: tomato;
     /* padding: 1rem; */
 }
 
-.partial a {
+.errModal a {
     padding: 0.5rem;
     margin-top: 3rem;
     background-color: tomato;
@@ -159,7 +159,7 @@ canvas {
     border-radius: 5px;
 }
 
-.partial a:hover {
+.errModal a:hover {
     background-color: grey;
     color: black;
     transition: 400ms;
@@ -175,6 +175,7 @@ input {
     font-size: 18px;
     margin: 20px;
     width: 300px;
+    text-align: center;
 }
 
 :focus {

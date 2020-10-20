@@ -40,6 +40,15 @@ module.exports.createUser = (firstname, lastname, email, hashedPw) => {
     );
 };
 
+module.exports.addProfile = (age, city, url, userId) => {
+    return db.query(
+        `
+        INSERT INTO user_profiles (age, city, url, user_id)
+        VALUES ($1, $2, $3, $4)
+        `,
+        [age, city, url, userId]
+    );
+};
 module.exports.getPasswordByEmail = (inputEmail) => {
     return db.query(`SELECT * FROM users WHERE email=$1`, [inputEmail]);
     // return db.query(`SELECT * FROM users WHERE email=$1`, [inputEmail]);

@@ -89,7 +89,9 @@ app.post("/petition", (req, res) => {
             });
     } else {
         res.render("petition", {
-            fill_err: true,
+            err:
+                "Oops! Looks like you still haven't signed my petition. You need to use the mouse to make your signature...",
+            btn: "try again",
         });
     }
 });
@@ -143,40 +145,64 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res) => {
     const { firstname, lastname, email, password } = req.body;
-    console.log(firstname, lastname, email, password);
+    // console.log(firstname, lastname, email, password);
     if (
         firstname !== "" &&
         lastname !== "" &&
         email !== "" &&
         password !== ""
     ) {
-        hash(password)
-            .then((hashedPw) => {
-                console.log("hashedPw", hashedPw);
-                //invoke the new db function to add user with all 4 fields
-                db.createUser(firstname, lastname, email, hashedPw)
-                    .then((results) => {
-                        //set cookie
-                        req.session.userId = results.rows[0].id;
-                        console.log("a new user was added!");
-                        res.redirect("/petition");
-                    })
-                    .catch((err) => {
-                        console.log("error in POST /register", err);
-                        res.render(
-                            "<h1>Server error: user could NOT be added to db</h1>"
-                        );
+        //existing email validation
+        db.getPasswordByEmail(email)
+            .then((results) => {
+                if (results.rows.length == 0) {
+                    //email not existing
+                    hash(password)
+                        .then((hashedPw) => {
+                            console.log("hashedPw", hashedPw);
+                            db.createUser(firstname, lastname, email, hashedPw)
+                                .then((results) => {
+                                    //set cookie
+                                    req.session.userId = results.rows[0].id;
+                                    console.log("a new user was added!");
+                                    res.redirect("/profile");
+                                }) //end of createUser()
+                                .catch((err) => {
+                                    console.log(
+                                        "error in POST /register createUser()",
+                                        err
+                                    );
+                                    res.send(
+                                        "<h1>Server error: user could NOT be added to db</h1>"
+                                    );
+                                });
+                        }) //end of hash()
+                        .catch((err) => {
+                            console.log("error is POST /register hash()", err);
+                            res.send(
+                                "<h1>Server error: your password could NOT be hashed</h1>"
+                            );
+                        });
+                } else {
+                    //of if block (email)
+                    console.log("email has been already used");
+                    res.render("register", {
+                        err: "email has been already used",
                     });
-            })
+                }
+            }) //end of getPasswordByEmail()
             .catch((err) => {
-                console.log("error is POST /register hash()", err);
-                res.render(
-                    "<h1>Server error: your password could NOT be hashed</h1>"
+                console.log("error is POST /register checkEmail", err);
+                res.send(
+                    "<h1>Server error: your email could NOT be verified</h1>"
                 );
             });
+        //end of hash block
     } else {
+        //of if block (firstname, lastname, email, password)
         res.render("register", {
-            fill_err: true,
+            err: "make sure your form is complete!",
+            btn: "try again",
         });
     }
 });
@@ -192,12 +218,7 @@ app.get("/login", (req, res) => {
 
 app.post("/login", (req, res) => {
     const { email, password } = req.body;
-    console.log(
-        "user input email: ",
-        email,
-        " user input password: ",
-        password
-    );
+    console.log("user input email: ", email, "user input password: ", password);
     if (email !== "" && password !== "") {
         db.getPasswordByEmail(email)
             .then((results) => {
@@ -215,13 +236,14 @@ app.post("/login", (req, res) => {
                             res.redirect("/petition");
                         } else {
                             res.render("login", {
-                                credent_err: true,
+                                err: "Uh oh! you have failed to log in...",
+                                btn: "try again",
                             });
                         }
                     })
                     .catch((err) => {
                         console.log("error in POST /login compare():", err);
-                        res.render(
+                        res.send(
                             "<h1>Server error: your password does NOT match</h1>"
                         );
                     });
@@ -229,13 +251,40 @@ app.post("/login", (req, res) => {
             .catch((err) => {
                 console.log("error in POST /login getPasswordByEmail():", err);
                 res.render("login", {
-                    credent_err: true,
+                    err: "Uh oh! you have failed to log in...",
+                    btn: "try again",
                 });
             });
     } else {
         res.render("login", {
-            fill_err: true,
+            err: "make sure your form is complete!",
+            btn: "try again",
         });
     }
 });
+
+app.get("/profile", (req, res) => {
+    const { userId } = req.session;
+    if (userId) {
+        res.render("profile", {});
+    } else {
+        res.redirect("register");
+    }
+});
+
+app.post("/profile", (req, res) => {
+    const { age, city, url } = req.body;
+    const { userId } = req.session;
+    console.log(age, city, url);
+    db.addProfile(age, city, url, userId)
+        .then((results) => {
+            console.log("a new profile was added!");
+            res.redirect("/petition");
+        })
+        .catch((err) => {
+            console.log("error in POST /profile", err);
+            res.send("<h1>Server error: profile could NOT be added to db</h1>");
+        });
+});
+
 app.listen(8080, () => console.log("petition SERVER at 8080..."));

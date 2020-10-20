@@ -2,10 +2,23 @@
     <h1>who else signed my petition?</h1>
     <div class="container">
         <div>
-            {{#rows}}
-                <h2>{{first}} {{last}}</h2>
-                <p>at {{created_at}}</p>
-            {{/rows}}   
+            {{#signers}}
+                <h2>
+                    {{#if url}}
+                        <a href="{{url}}">{{first}} {{last}}</a>
+                    {{else}}
+                        <span>{{fisrt}} {{last}}</span>
+                    {{/if}}
+
+                    {{#if age}}
+                        <span> | {{age}}</span>                
+                    {{/if}}
+
+                    {{#if city}}
+                        <a href="{{city}}"> | {{city}}</a>                
+                    {{/if}}
+                </h2>
+            {{/signers}}
         </div>
     </div>
 </div>
