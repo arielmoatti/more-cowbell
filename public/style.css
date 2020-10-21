@@ -60,7 +60,8 @@ a {
 .thankyou,
 .login,
 .register,
-.profile {
+.profile,
+.update {
     height: 70vh;
     display: flex;
     flex-direction: column;
@@ -115,6 +116,10 @@ button[type="submit"]:hover {
     background-color: #ccc5b9;
     color: #22241f;
     transition: 400ms ease-in-out;
+}
+
+.skip {
+    align-self: flex-end;
 }
 
 canvas {

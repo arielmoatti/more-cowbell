@@ -1,9 +1,15 @@
-var spicedPg = require("spiced-pg");
-var db = spicedPg("postgres:postgres:postgres@localhost:5432/petition");
+let spicedPg = require("spiced-pg");
+// let db;
+// if (process.env.DATABASE_URL) {
+//     db = spicedPg(process.env.DATABASE_URL);
+// } else {
+//     db = spicedPg("postgres:postgres:postgres@localhost:5432/petition");
+// }
 
-// module.exports.getSigners = () => {
-//     return db.query(`SELECT * FROM users`);
-// };
+let db = spicedPg(
+    process.env.DATABASE_URL ||
+        "postgres:postgres:postgres@localhost:5432/petition"
+);
 
 module.exports.countSigners = () => {
     return db.query(`SELECT COUNT(*) FROM signatures`);
@@ -51,7 +57,6 @@ module.exports.addProfile = (age, city, url, userId) => {
 };
 module.exports.getPasswordByEmail = (inputEmail) => {
     return db.query(`SELECT * FROM users WHERE email=$1`, [inputEmail]);
-    // return db.query(`SELECT * FROM users WHERE email=$1`, [inputEmail]);
 };
 
 module.exports.getSigners = () => {
@@ -63,6 +68,18 @@ module.exports.getSigners = () => {
     JOIN user_profiles
     ON users.id = user_profiles.user_id;
     `);
+};
+
+module.exports.getProfile = (userId) => {
+    return db.query(
+        `
+    SELECT users.first, users.last, users.email, user_profiles.age, user_profiles.city, user_profiles.url    
+    FROM users
+    JOIN user_profiles
+    ON users.id = user_profiles.user_id
+    WHERE user_id=$1`,
+        [userId]
+    );
 };
 
 /*

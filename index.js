@@ -289,4 +289,23 @@ app.post("/profile", (req, res) => {
         });
 });
 
-app.listen(8080, () => console.log("petition SERVER at 8080..."));
+app.get("/profile/update", (req, res) => {
+    const { userId } = req.session;
+    console.log("userId", userId);
+    if (userId) {
+        //query here
+        db.getProfile(userId).then(({ rows }) => {
+            res.render("update", {
+                rows,
+            });
+        });
+        //
+        //
+    } else {
+        res.redirect("/register");
+    }
+});
+
+app.listen(process.env.PORT || 8080, () =>
+    console.log("petition SERVER at 8080...")
+);

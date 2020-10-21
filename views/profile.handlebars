@@ -7,9 +7,10 @@
             <input type='text' name='url' placeholder='Website' autocomplete='off'>
             {{>csrf}}
             <button type="submit">submit</button>
-        </form>        
-        {{#if fill_err}}
-            {{>par-fill_err}}
+        </form>
+        <a href="/petition" class="myBtn skip">skip for now</a>
+        {{#if err}}
+            {{>errors}}
         {{/if}}
     </div>
 </div>
