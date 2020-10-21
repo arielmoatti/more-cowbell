@@ -92,6 +92,7 @@ app.post("/petition", (req, res) => {
             err:
                 "Oops! Looks like you still haven't signed my petition. You need to use the mouse to make your signature...",
             btn: "try again",
+            href: "javascript://",
         });
     }
 });
@@ -192,7 +193,9 @@ app.post("/register", (req, res) => {
                     //of if block (email)
                     console.log("email has been already used");
                     res.render("register", {
-                        err: "email has been already used",
+                        err: "this email is already in use",
+                        btn: "try again",
+                        href: "javascript://",
                     });
                 }
             }) //end of getPasswordByEmail()
@@ -208,6 +211,7 @@ app.post("/register", (req, res) => {
         res.render("register", {
             err: "make sure your form is complete!",
             btn: "try again",
+            href: "javascript://",
         });
     }
 });
@@ -240,6 +244,7 @@ app.post("/login", (req, res) => {
                             res.render("login", {
                                 err: "Uh oh! you have failed to log in...",
                                 btn: "try again",
+                                href: "javascript://",
                             });
                         }
                     })
@@ -255,12 +260,14 @@ app.post("/login", (req, res) => {
                 res.render("login", {
                     err: "Uh oh! you have failed to log in...",
                     btn: "try again",
+                    href: "javascript://",
                 });
             });
     } else {
         res.render("login", {
-            err: "make sure your form is complete!",
+            err: "these two fields are mandatory!",
             btn: "try again",
+            href: "javascript://",
         });
     }
 });
@@ -310,18 +317,60 @@ app.post("/profile", (req, res) => {
 
 app.get("/profile/update", (req, res) => {
     const { userId } = req.session;
-    // console.log("userId", userId);
     if (userId) {
-        //query here
         db.getProfile(userId).then(({ rows }) => {
             res.render("update", {
                 rows,
             });
         });
-        //
-        //
     } else {
         res.redirect("/register");
+    }
+});
+
+app.post("/profile/update", (req, res) => {
+    const { firstname, lastname, email, password, age, city, url } = req.body;
+    // console.log(firstname, lastname, email, password);
+    if (firstname !== "" && lastname !== "" && email !== "") {
+        res.redirect("/petition");
+
+        /*
+        //existing email validation
+        db.getPasswordByEmail(email)
+            .then((results) => {
+                // console.log("results", results);
+                if (results.rows[0].email != email) {
+                    //email not existing
+                    //rest of code here **************************
+                    console.log("rest of code will be executed");
+                } else {
+                    //of if block (email)
+
+                    console.log("email has been already used");
+                    res.render("update", {
+                        err: "this email is already in use",
+                        btn: "try again",
+                        href: "javascript://",
+                    });
+                }
+            }) //end of getPasswordByEmail()
+            .catch((err) => {
+                console.log("error is POST /update checkEmail", err);
+                res.send(
+                    "<h1>Server error: your email could NOT be verified</h1>"
+                );
+            });
+            */
+    } else {
+        //of if block (firstname, lastname, email, password)
+        console.log("missing fields");
+        // res.redirect("/profile/update");
+        // res.render("update", {});
+        res.render("update", {
+            err: "you cannot leave mandatory fields empty!",
+            btn: "try again",
+            href: "/profile/update",
+        });
     }
 });
 

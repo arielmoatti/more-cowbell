@@ -10,9 +10,9 @@
                 <input type='text' name='age' value="{{age}}" placeholder='Age' autocomplete='off'>
                 <input type='text' name='city' value="{{city}}" placeholder='City' autocomplete='off'>
                 <input type='text' name='url' value="{{url}}" placeholder='Website' autocomplete='off'>
-            {{>csrf}}
-            <button type="submit">update</button>
             {{/rows}}
+                {{>csrf}}
+            <button type="submit">update</button>
         </form>        
         {{#if err}}
             {{>errors}}
