@@ -52,18 +52,22 @@ app.get("/", (req, res) => {
 app.get("/petition", (req, res) => {
     const { userId } = req.session;
     if (userId) {
-        db.getSignature(userId).then((results) => {
-            if (results.rows[0].signature) {
-                req.session.signed = true;
-                res.redirect("/thank-you");
-            } else {
-                db.getCurrentSigner(userId).then(({ rows }) => {
-                    res.render("petition", {
-                        rows,
+        db.getSignature(userId)
+            .then((results) => {
+                if (results.rows.length != 0) {
+                    req.session.signed = true;
+                    res.redirect("/thank-you");
+                } else {
+                    db.getCurrentSigner(userId).then(({ rows }) => {
+                        res.render("petition", {
+                            rows,
+                        });
                     });
-                });
-            }
-        });
+                }
+            })
+            .catch((err) => {
+                console.log("error in GET /petition getSignature()", err);
+            });
     } else {
         res.redirect("/register");
     }
@@ -114,18 +118,22 @@ app.get("/thank-you", (req, res) => {
 });
 
 app.get("/signerslist", (req, res) => {
-    const { userId } = req.session;
+    const { signed, userId } = req.session;
     if (userId) {
-        db.getSigners()
-            .then(({ rows }) => {
-                console.log("rows", rows);
-                res.render("signerslist", {
-                    rows,
+        if (signed) {
+            db.getSigners()
+                .then(({ rows }) => {
+                    // console.log("rows", rows);
+                    res.render("signerslist", {
+                        rows,
+                    });
+                })
+                .catch((err) => {
+                    console.log("error in /signerslist", err);
                 });
-            })
-            .catch((err) => {
-                console.log("error in /signerslist", err);
-            });
+        } else {
+            res.redirect("/petition");
+        }
     } else {
         res.redirect("/register");
     }
@@ -156,7 +164,7 @@ app.post("/register", (req, res) => {
                     //email not existing
                     hash(password)
                         .then((hashedPw) => {
-                            console.log("hashedPw", hashedPw);
+                            // console.log("hashedPw", hashedPw);
                             db.createUser(firstname, lastname, email, hashedPw)
                                 .then((results) => {
                                     //set cookie
@@ -215,22 +223,19 @@ app.get("/login", (req, res) => {
 
 app.post("/login", (req, res) => {
     const { email, password } = req.body;
-    console.log("user input email: ", email, "user input password: ", password);
+    // console.log("user input email: ", email, "user input password: ", password);
     if (email !== "" && password !== "") {
         db.getPasswordByEmail(email)
             .then((results) => {
                 // console.log("from getPasswordByEmail > results: ", results);
                 const hashedPw = results.rows[0].password;
-                console.log("from getPasswordByEmail > hashedPw: ", hashedPw);
+                // console.log("from getPasswordByEmail > hashedPw: ", hashedPw);
                 compare(password, hashedPw)
                     .then((match) => {
-                        console.log(
-                            "user input password matches the hash? ",
-                            match
-                        );
+                        // console.log("user input password matches the hash? ",match);
                         if (match) {
                             req.session.userId = results.rows[0].id; //set cookie
-                            res.redirect("/petition");
+                            res.redirect("/profile");
                         } else {
                             res.render("login", {
                                 err: "Uh oh! you have failed to log in...",
@@ -262,11 +267,25 @@ app.post("/login", (req, res) => {
 
 app.get("/profile", (req, res) => {
     const { userId, profiled } = req.session;
+    // console.log("profiled", profiled);
     if (userId) {
         if (profiled) {
             res.redirect("/petition");
         } else {
-            res.render("profile", {});
+            db.getProfile(userId)
+                .then(({ rows }) => {
+                    // console.log("rows", rows);
+                    if (rows.length == 0) {
+                        res.render("profile", {});
+                    } else {
+                        // console.log("user has a profile!");
+                        req.session.profiled = true;
+                        res.redirect("/petition");
+                    }
+                })
+                .catch((err) => {
+                    console.log("error in GET /profile getProfile()", err);
+                });
         }
     } else {
         res.redirect("/register");
@@ -276,7 +295,7 @@ app.get("/profile", (req, res) => {
 app.post("/profile", (req, res) => {
     const { age, city, url } = req.body;
     const { userId } = req.session;
-    console.log(age, city, url);
+    // console.log(age, city, url);
     db.addProfile(age, city, url, userId)
         .then((results) => {
             console.log("a new profile was added!");
@@ -291,7 +310,7 @@ app.post("/profile", (req, res) => {
 
 app.get("/profile/update", (req, res) => {
     const { userId } = req.session;
-    console.log("userId", userId);
+    // console.log("userId", userId);
     if (userId) {
         //query here
         db.getProfile(userId).then(({ rows }) => {
