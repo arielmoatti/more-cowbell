@@ -1,10 +1,13 @@
-const errModal = $(".errModal");
-const errModalBtn = $(".errModalBtn");
+const modal = $(".modal");
+const modalBtn = $(".modalBtn");
+
+// for canvas
 const canvas = document.getElementById("canvas");
 let x,
     y,
     drawPing = null;
 
+// canvas functions
 if (canvas) {
     const context = canvas.getContext("2d");
     const signCanvas = document.querySelector('input[name="signature"]');
@@ -52,6 +55,6 @@ if (canvas) {
 }
 
 //visibility of modals
-errModalBtn.on("click", () => {
-    errModal.fadeOut(500);
+modalBtn.on("click", () => {
+    modal.fadeOut(500);
 });

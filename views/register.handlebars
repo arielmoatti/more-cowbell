@@ -11,12 +11,8 @@
         </form>
         <p>already registered? then please <a href="/login">log in</a></p>
         
-        {{#if err}}
-            {{>errors}}
-        {{/if}}
-        {{!-- {{#if fill_err}}
-            {{>par-fill_err}}
-        {{/if}} --}}
-
+        {{#if message}}
+            {{>msgBox}}
+        {{/if}}        
     </div>
 </div>

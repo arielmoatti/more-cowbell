@@ -8,8 +8,8 @@
             <button type="submit">log in</button>
         </form>
         <p>not yet registered? then please go ahead and <a href="/register">register</a></p>
-        {{#if err}}
-            {{>errors}}
+        {{#if message}}
+            {{>msgBox}}
         {{/if}}
     </div>
 </div>

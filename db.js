@@ -48,7 +48,7 @@ module.exports.addProfile = (age, city, url, userId) => {
         [age || null, city, url, userId]
     );
 };
-module.exports.getPasswordByEmail = (inputEmail) => {
+module.exports.getUserDataByEmail = (inputEmail) => {
     return db.query(`SELECT * FROM users WHERE email=$1`, [inputEmail]);
 };
 
@@ -72,6 +72,18 @@ module.exports.getProfile = (userId) => {
     ON users.id = user_profiles.user_id
     WHERE user_id=$1`,
         [userId]
+    );
+};
+
+module.exports.updateUserWithoutPW = (first, last, email, userId) => {
+    return db.query(
+        `
+    UPDATE users 
+    SET first = $1, last=$2, email=$3
+    WHERE id = $4
+    RETURNING *
+    `,
+        [first, last, email, userId]
     );
 };
 

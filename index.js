@@ -159,7 +159,7 @@ app.post("/register", (req, res) => {
         password !== ""
     ) {
         //existing email validation
-        db.getPasswordByEmail(email)
+        db.getUserDataByEmail(email)
             .then((results) => {
                 if (results.rows.length == 0) {
                     //email not existing
@@ -193,12 +193,12 @@ app.post("/register", (req, res) => {
                     //of if block (email)
                     console.log("email has been already used");
                     res.render("register", {
-                        err: "this email is already in use",
+                        message: "this email is already in use",
                         btn: "try again",
                         href: "javascript://",
                     });
                 }
-            }) //end of getPasswordByEmail()
+            }) //end of getUserDataByEmail()
             .catch((err) => {
                 console.log("error is POST /register checkEmail", err);
                 res.send(
@@ -209,7 +209,7 @@ app.post("/register", (req, res) => {
     } else {
         //of if block (firstname, lastname, email, password)
         res.render("register", {
-            err: "make sure your form is complete!",
+            message: "make sure your form is complete!",
             btn: "try again",
             href: "javascript://",
         });
@@ -229,11 +229,11 @@ app.post("/login", (req, res) => {
     const { email, password } = req.body;
     // console.log("user input email: ", email, "user input password: ", password);
     if (email !== "" && password !== "") {
-        db.getPasswordByEmail(email)
+        db.getUserDataByEmail(email)
             .then((results) => {
-                // console.log("from getPasswordByEmail > results: ", results);
+                // console.log("from getUserDataByEmail > results: ", results);
                 const hashedPw = results.rows[0].password;
-                // console.log("from getPasswordByEmail > hashedPw: ", hashedPw);
+                // console.log("from getUserDataByEmail > hashedPw: ", hashedPw);
                 compare(password, hashedPw)
                     .then((match) => {
                         // console.log("user input password matches the hash? ",match);
@@ -242,7 +242,7 @@ app.post("/login", (req, res) => {
                             res.redirect("/profile");
                         } else {
                             res.render("login", {
-                                err: "Uh oh! you have failed to log in...",
+                                message: "Uh oh! you have failed to log in...",
                                 btn: "try again",
                                 href: "javascript://",
                             });
@@ -256,16 +256,16 @@ app.post("/login", (req, res) => {
                     });
             })
             .catch((err) => {
-                console.log("error in POST /login getPasswordByEmail():", err);
+                console.log("error in POST /login getUserDataByEmail():", err);
                 res.render("login", {
-                    err: "Uh oh! you have failed to log in...",
+                    message: "Uh oh! you have failed to log in...",
                     btn: "try again",
                     href: "javascript://",
                 });
             });
     } else {
         res.render("login", {
-            err: "these two fields are mandatory!",
+            message: "these two fields are mandatory!",
             btn: "try again",
             href: "javascript://",
         });
@@ -319,6 +319,7 @@ app.get("/profile/update", (req, res) => {
     const { userId } = req.session;
     if (userId) {
         db.getProfile(userId).then(({ rows }) => {
+            req.session.userEmail = rows[0].email;
             res.render("update", {
                 rows,
             });
@@ -330,50 +331,71 @@ app.get("/profile/update", (req, res) => {
 
 app.post("/profile/update", (req, res) => {
     const { firstname, lastname, email, password, age, city, url } = req.body;
-    // console.log(firstname, lastname, email, password);
+    const { userId, userEmail } = req.session;
     if (firstname !== "" && lastname !== "" && email !== "") {
-        res.redirect("/petition");
-
-        /*
         //existing email validation
-        db.getPasswordByEmail(email)
-            .then((results) => {
-                // console.log("results", results);
-                if (results.rows[0].email != email) {
-                    //email not existing
-                    //rest of code here **************************
-                    console.log("rest of code will be executed");
+        db.getUserDataByEmail(email)
+            .then(({ rows }) => {
+                if (rows.length === 0 || rows[0].email === userEmail) {
+                    console.log("email is good to use!");
+                    db.updateUserWithoutPW(firstname, lastname, email, userId)
+                        .then((results) => {
+                            //more updates here
+                            //
+                            //
+                            //
+
+                            res.render("update", {
+                                message:
+                                    "your profile was successfully updated",
+                                btn: "continue",
+                                href: "/petition",
+                            });
+                        })
+                        .catch((err) => {
+                            console.log(
+                                "error in POST /register createUser()",
+                                err
+                            );
+                            res.send(
+                                "<h1>Server error: user could NOT be added to db</h1>"
+                            );
+                        });
+                    // console.log("rest of code will be executed");
                 } else {
                     //of if block (email)
-
                     console.log("email has been already used");
                     res.render("update", {
-                        err: "this email is already in use",
+                        message: "this email is already in use",
                         btn: "try again",
-                        href: "javascript://",
+                        href: "/profile/update",
                     });
                 }
-            }) //end of getPasswordByEmail()
+            }) //end of getUserDataByEmail()
             .catch((err) => {
                 console.log("error is POST /update checkEmail", err);
                 res.send(
                     "<h1>Server error: your email could NOT be verified</h1>"
                 );
             });
-            */
     } else {
         //of if block (firstname, lastname, email, password)
         console.log("missing fields");
-        // res.redirect("/profile/update");
-        // res.render("update", {});
         res.render("update", {
-            err: "you cannot leave mandatory fields empty!",
+            message: "you cannot leave mandatory fields empty!",
             btn: "try again",
             href: "/profile/update",
         });
-    }
+    } //close else for empty fields
 });
 
-app.listen(process.env.PORT || 8080, () =>
-    console.log("petition SERVER at 8080...")
-);
+app.get("/logout", (req, res) => {
+    req.session = null;
+    res.redirect("/");
+});
+
+if (require.main == module) {
+    app.listen(process.env.PORT || 8080, () =>
+        console.log("petition SERVER at 8080...")
+    );
+}
