@@ -4,21 +4,21 @@ let db = spicedPg(
         "postgres:postgres:postgres@localhost:5432/petition"
 );
 
-module.exports.countSigners = () => {
+exports.countSigners = () => {
     return db.query(`SELECT COUNT(*) FROM signatures`);
 };
 
-module.exports.getCurrentSigner = (userId) => {
+exports.getCurrentSigner = (userId) => {
     return db.query(`SELECT * FROM users WHERE id=$1`, [userId]);
 };
 
-module.exports.getSignature = (userId) => {
+exports.getSignature = (userId) => {
     return db.query(`SELECT signature FROM signatures WHERE user_id=$1`, [
         userId,
     ]);
 };
 
-module.exports.addSignature = (userId, canvaSignature) => {
+exports.addSignature = (userId, canvaSignature) => {
     return db.query(
         `
         INSERT INTO signatures (user_id, signature)
@@ -28,7 +28,7 @@ module.exports.addSignature = (userId, canvaSignature) => {
     );
 };
 
-module.exports.createUser = (firstname, lastname, email, hashedPw) => {
+exports.createUser = (firstname, lastname, email, hashedPw) => {
     return db.query(
         `
         INSERT INTO users (first, last, email, password)
@@ -39,7 +39,7 @@ module.exports.createUser = (firstname, lastname, email, hashedPw) => {
     );
 };
 
-module.exports.addProfile = (age, city, url, userId) => {
+exports.addProfile = (age, city, url, userId) => {
     return db.query(
         `
         INSERT INTO user_profiles (age, city, url, user_id)
@@ -48,11 +48,11 @@ module.exports.addProfile = (age, city, url, userId) => {
         [age || null, city, url, userId]
     );
 };
-module.exports.getUserDataByEmail = (inputEmail) => {
+exports.getUserDataByEmail = (inputEmail) => {
     return db.query(`SELECT * FROM users WHERE email=$1`, [inputEmail]);
 };
 
-module.exports.getSigners = () => {
+exports.getSigners = () => {
     return db.query(`
     SELECT signatures.signature, users.first, users.last, user_profiles.age, user_profiles.city, user_profiles.url    
     FROM signatures
@@ -63,7 +63,7 @@ module.exports.getSigners = () => {
     `);
 };
 
-module.exports.getProfile = (userId) => {
+exports.getProfile = (userId) => {
     return db.query(
         `
     SELECT users.first, users.last, users.email, user_profiles.age, user_profiles.city, user_profiles.url    
@@ -75,7 +75,7 @@ module.exports.getProfile = (userId) => {
     );
 };
 
-module.exports.updateUserWithoutPW = (first, last, email, userId) => {
+exports.updateUserWithoutPW = (first, last, email, userId) => {
     return db.query(
         `
     UPDATE users 
@@ -87,8 +87,41 @@ module.exports.updateUserWithoutPW = (first, last, email, userId) => {
     );
 };
 
+exports.updateUserPassword = (hashedPw, userId) => {
+    return db.query(
+        `
+    UPDATE users 
+    SET password = $1
+    WHERE id = $2
+    `,
+        [hashedPw, userId]
+    );
+};
+
+exports.upsertProfile = (age, city, url, userId) => {
+    return db.query(
+        `
+    INSERT INTO user_profiles (age, city, url, user_id)
+    VALUES ($1, $2, $3, $4)
+    ON CONFLICT (user_id)
+    DO UPDATE SET age = $1, city = $2, url = $3;
+    `,
+        [age || null, city, url, userId]
+    );
+};
+
+exports.deleteSignature = (userId) => {
+    return db.query(
+        `
+        DELETE
+        FROM signatures
+        WHERE user_id = $1;        
+        `,
+        [userId]
+    );
+};
 /*
-module.exports.getTimestamp = () => {
+exports.getTimestamp = () => {
     let date = db.query(`SELECT EXTRACT (DAY FROM created) FROM signatures`);
     date += db.query(`SELECT EXTRACT (MONTH FROM created) FROM signatures`);
     date += db.query(`SELECT EXTRACT (YEAR FROM created) FROM signatures`);

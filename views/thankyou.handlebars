@@ -11,5 +11,13 @@
         then click the below to find out...</p>
         <a href="/signerslist" class="myBtn">signers list</a>
         <a href="/profile/update" class="myBtn">update profile</a>
+        <a href="/delete/signature" class="myBtn">delete signature</a>
+        {{!-- <form method='POST'>
+            <button class="myBtn" type="submit">delete signature</button>
+            {{>csrf}}
+        </form> --}}
     </div>
+    {{#if message}}
+            {{>msgBox}}
+        {{/if}} 
 </div>
