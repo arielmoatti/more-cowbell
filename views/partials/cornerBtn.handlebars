@@ -1,0 +1,7 @@
+{{#if login}}
+    <a href="/register" class="myBtn headerBtn">register</a>
+{{else if register}}
+    <a href="/login" class="myBtn headerBtn">login</a>
+{{else if logged}}
+    <a href="/logout" class="myBtn headerBtn">logout</a>
+{{/if}}
