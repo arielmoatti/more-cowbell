@@ -1,0 +1,21 @@
+{{>cornerBtn logged=true}}
+<div class="cities">
+    <div class="container">
+        <div>
+            {{#rows}}
+                <h1>supporters from {{city}} who need more cowbell:</h1>
+                <h2 class="signerList">
+                    {{#if url}}
+                        <a class="link" href="{{url}}" target="_blank">{{first}} {{last}}</a>
+                    {{else}}
+                        <span>{{first}} {{last}}</span>
+                    {{/if}}
+
+                    {{#if age}}
+                        <span>&nbsp; |&nbsp;  {{age}}</span>                    
+                    {{/if}}                    
+                </h2>
+            {{/rows}}
+        </div>
+    </div>
+</div>

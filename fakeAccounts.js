@@ -25,7 +25,7 @@ let dbReset = () => {
             age         INT,
             city        VARCHAR(255),
             url         VARCHAR(255),
-            user_id     INT NOT NULL REFERENCES users(id) UNIQUE
+            user_id     INT NOT NULL UNIQUE REFERENCES users(id)
         );
 
         DROP TABLE IF EXISTS signatures;

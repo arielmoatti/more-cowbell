@@ -26,6 +26,8 @@ header {
 
 header a {
     color: #ccc5b9;
+    font-size: 2em;
+    font-weight: bold;
 }
 
 footer {
