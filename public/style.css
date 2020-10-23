@@ -89,6 +89,11 @@ p {
     /* padding: 10px; */
 }
 
+.container .bottom {
+    padding-top: 40px;
+    display: flex;
+    justify-content: space-around;
+}
 form {
     /* padding: 20px; */
     display: flex;
@@ -213,4 +218,15 @@ input:-webkit-autofill {
 
 .signerList:hover {
     transform: scale(1.1);
+}
+
+.link:link,
+.link:active,
+.link:visited {
+    color: #ccc5b9;
+}
+
+.link:hover {
+    color: grey;
+    transition: 200ms;
 }

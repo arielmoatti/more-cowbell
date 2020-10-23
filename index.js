@@ -1,6 +1,6 @@
 //~~~~ IMPORTS
 const express = require("express");
-const app = express();
+const app = (exports.app = express());
 const db = require("./db");
 const hb = require("express-handlebars");
 const cookieSession = require("cookie-session");
@@ -458,7 +458,7 @@ app.get("/logout", (req, res) => {
     res.redirect("/login");
 });
 
-app.get("/delete/signature", (req, res) => {
+app.post("/delete/signature", (req, res) => {
     //
     const { userId } = req.session;
     if (userId) {

@@ -1,10 +1,10 @@
 {{>cornerBtn logged=true}}
 <div class="home">
     {{#rows}}
-        <h2>Hello, {{first}}!</h2>
+        <h2>Welcome, {{first}}!</h2>
         <h3>Looks likes you haven't yet signed the petition...</h3>
     {{/rows}}
-    <h2>If you agree, please sign your name</h2>
+    <h2>If you support my cause, please sign your name using the mouse</h2>
     <div class="container">            
         <form method='POST'>            
             <div>
@@ -12,7 +12,7 @@
                 {{>csrf}}                
                 <canvas id="canvas" width="500" height="150"></canvas>
             </div>
-            <button type="submit">sign up</button>
+            <button type="submit">submit</button>
         </form>
         {{#if message}}
             {{>msgBox}}

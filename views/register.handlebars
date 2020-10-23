@@ -1,6 +1,7 @@
 {{>cornerBtn register=true}}
 <div class="register">
-    <h2>register to my petition!</h2>
+    <h1>welcome to my cowbell petition!</h1>
+    <h2>please take a moment to register</h2>
     <div class="container">            
         <form method='POST'>
             <input type='text' name='firstname' placeholder='* First Name' autocomplete='off'>
@@ -10,7 +11,7 @@
             {{>csrf}}
             <button type="submit">register now</button>
         </form>
-        <p>already registered? then please <a href="/login">log in</a></p>
+        <p>already registered? then please <a class="link" href="/login">log in</a></p>
         
         {{#if message}}
             {{>msgBox}}

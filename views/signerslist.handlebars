@@ -1,22 +1,24 @@
 {{>cornerBtn logged=true}}
 <div class="signers">
-    <h1>who else signed my petition?</h1>
+    <h1>supporters who need more cowbell:</h1>
     <div class="container">
         <div>
             {{#rows}}
                 <h2 class="signerList">
                     {{#if url}}
-                        <a href="{{url}}" target="_blank">{{first}} {{last}}</a>
+                        <a class="link" href="{{url}}" target="_blank">{{first}} {{last}}</a>
                     {{else}}
                         <span>{{first}} {{last}}</span>
                     {{/if}}
 
                     {{#if age}}
-                        <span> | {{age}} |</span>                
+                        <span>&nbsp; |&nbsp;  {{age}}&nbsp;  | &nbsp;</span>
+                    {{else if city}}
+                        <span>&nbsp; | &nbsp;</span>
                     {{/if}}
 
                     {{#if city}}
-                        <a href="signerslist/{{city}}"> {{city}}</a>                
+                        <a class="link" href="signerslist/{{city}}"> {{city}}</a>                
                     {{/if}}
                 </h2>
             {{/rows}}

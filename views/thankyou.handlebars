@@ -2,21 +2,22 @@
 <div class="thankyou">
     {{#rows}}
     <h2>
-        thank you, {{first}} {{last}}, for signing my petition! 
+        thank you, {{first}} {{last}} for your support! 
     </h2>
-    <p>with your signature below, you are a registered signer of my petition!</p>
+    <p>with your signature below, you are a supporter of my petition</p>
     {{/rows}}    
     <img id="signature" src="{{signature}}" alt="signature">
     <div class="container">
-    <p>want to see the other {{numberOfSigners}} people who signed this petition?<br>
-        then click the below to find out...</p>
-        <a href="/signerslist" class="myBtn">signers list</a>
-        <a href="/profile/update" class="myBtn">update profile</a>
-        <a href="/delete/signature" class="myBtn">delete signature</a>
-        {{!-- <form method='POST'>
-            <button class="myBtn" type="submit">delete signature</button>
-            {{>csrf}}
-        </form> --}}
+    <h3>Total number of supporters until now: {{numberOfSigners}}</h3>
+        <p>Want to know who else needs more cowbell? <br>click below to find out...</p>
+        <a href="/signerslist" class="myBtn">supporters</a>
+        <div class="bottom">
+            <a href="/profile/update" class="myBtn">update profile</a>
+            <form method='POST' action='/delete/signature'>
+                <button class="myBtn" type="submit">delete signature</button>
+                {{>csrf}}
+            </form>
+        </div>
     </div>
     {{#if message}}
             {{>msgBox}}

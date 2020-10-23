@@ -36,6 +36,7 @@ let dbReset = () => {
             created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     `);
+    console.log("finished creating tables!");
 };
 /////
 
