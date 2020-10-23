@@ -38,17 +38,11 @@ footer {
     width: 100%;
 }
 
-footer a {
-    display: inline-block;
-    color: #ccc5b9;
-    margin: 5px 0px;
-    opacity: 0.3;
-    /* margin: 10px; */
-}
-
 footer p {
     margin: 0;
     opacity: 0.3;
+    padding: 0;
+    font-size: 12px;
 }
 
 a {
@@ -62,7 +56,7 @@ a {
 .register,
 .profile,
 .update {
-    height: 70vh;
+    height: 80vh;
     display: flex;
     flex-direction: column;
     overflow: auto;
