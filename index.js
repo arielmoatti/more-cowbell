@@ -57,7 +57,7 @@ const checkFields = (age, url) => {
                 field = `please add "http://" or "https://" to your address`;
                 return field;
             } else if (url.startsWith("javascript:")) {
-                field = "WHAT ARE YOU TRYING TO PULL HERE?!";
+                field = "WHAT THE HECK ARE YOU TRYING TO PULL HERE?!";
                 return field;
             } else {
                 field = `make sure your address begins with "http://" or "https://"`;
@@ -350,7 +350,12 @@ app.post("/profile", (req, res) => {
             href: "javascript://",
         });
     } else {
-        db.addProfile(age, city, url, userId)
+        // capitalize and lowercasing city name
+        let capCity = city.toLowerCase();
+        capCity = capCity.charAt(0).toUpperCase() + capCity.slice(1);
+        //
+
+        db.addProfile(age, capCity, url, userId)
             .then((results) => {
                 // console.log("a new profile was added!");
                 req.session.profiled = true;
@@ -402,29 +407,23 @@ app.post("/profile/update", (req, res) => {
             db.getUserDataByEmail(email)
                 .then(({ rows }) => {
                     if (rows.length === 0 || rows[0].email === userEmail) {
-                        // console.log("email is good to use!");
+                        // email is good to use!
                         db.updateUserWithoutPW(
                             firstname,
                             lastname,
                             email,
                             userId
                         )
-                            .then((results) => {
-                                //more updates here
-                                //
+                            .then(() => {
+                                //check user also changed password
                                 if (password) {
                                     hash(password)
                                         .then((hashedPw) => {
-                                            // console.log("hashedPw", hashedPw);
                                             db.updateUserPassword(
                                                 hashedPw,
                                                 userId
                                             )
-                                                .then(() => {
-                                                    // console.log(
-                                                    //     "user has changed password!"
-                                                    // );
-                                                }) //end of updateUserPassword()
+                                                .then(() => {}) //end of updateUserPassword()
                                                 .catch((err) => {
                                                     console.log(
                                                         "error in POST /update updateUserPassword()",
@@ -446,7 +445,13 @@ app.post("/profile/update", (req, res) => {
                                         });
                                 } //end of if password
                                 ////// update rest of profile fields //////
-                                db.upsertProfile(age, city, url, userId)
+                                // capitalize and lowercasing city name
+                                let capCity = city.toLowerCase();
+                                capCity =
+                                    capCity.charAt(0).toUpperCase() +
+                                    capCity.slice(1);
+                                //
+                                db.upsertProfile(age, capCity, url, userId)
                                     .then(() => {
                                         //
                                         // console.log(
@@ -506,6 +511,45 @@ app.post("/profile/update", (req, res) => {
             href: "/profile/update",
         });
     } //close else for empty fields
+});
+
+app.get("/signerslist/:city", (req, res) => {
+    const { signed, userId } = req.session;
+    const { city } = req.params;
+    if (userId) {
+        if (signed) {
+            db.getSignersByCity(city)
+                .then(({ rows }) => {
+                    let titleCity;
+                    if (rows.length > 0) {
+                        // titleCity =
+                        //     rows[0].city.toLowerCase().charAt(0).toUpperCase() +
+                        //     rows[0].city.slice(1);
+                        titleCity = rows[0].city.toLowerCase();
+                        titleCity =
+                            titleCity.charAt(0).toUpperCase() +
+                            titleCity.slice(1);
+                    }
+                    res.render("cities", {
+                        rows,
+                        titleCity,
+                    });
+                })
+                .catch((err) => {
+                    console.log(
+                        "error is GET /signerslist/:city getSignersByCity()",
+                        err
+                    );
+                    res.send(
+                        "<h1>Server error: couldn't generate city list</h1>"
+                    );
+                });
+        } else {
+            res.redirect("/petition");
+        }
+    } else {
+        res.redirect("/register");
+    }
 });
 
 app.get("/logout", (req, res) => {

@@ -57,7 +57,8 @@ a {
 .login,
 .register,
 .profile,
-.update {
+.update,
+.cities {
     height: 80vh;
     display: flex;
     flex-direction: column;

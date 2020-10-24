@@ -4,6 +4,10 @@ let db = spicedPg(
         "postgres:postgres:postgres@localhost:5432/petition"
 );
 
+//////////////
+/// SELECT ///
+//////////////
+
 exports.countSigners = () => {
     return db.query(`SELECT COUNT(*) FROM signatures`);
 };
@@ -17,6 +21,52 @@ exports.getSignature = (userId) => {
         userId,
     ]);
 };
+
+exports.getUserDataByEmail = (inputEmail) => {
+    return db.query(`SELECT * FROM users WHERE email=$1`, [inputEmail]);
+};
+
+exports.getSigners = () => {
+    return db.query(`
+    SELECT signatures.signature, users.first, users.last, user_profiles.age, user_profiles.city, user_profiles.url    
+    FROM signatures
+    JOIN users
+    ON users.id = signatures.user_id
+    JOIN user_profiles
+    ON users.id = user_profiles.user_id;
+    `);
+};
+
+exports.getProfile = (userId) => {
+    return db.query(
+        `
+    SELECT users.first, users.last, users.email, user_profiles.age, user_profiles.city, user_profiles.url    
+    FROM users
+    JOIN user_profiles
+    ON users.id = user_profiles.user_id
+    WHERE user_id=$1`,
+        [userId]
+    );
+};
+
+exports.getSignersByCity = (city) => {
+    return db.query(
+        `
+    SELECT signatures.signature, users.first, users.last, user_profiles.age, user_profiles.city, user_profiles.url
+    FROM signatures
+    JOIN users
+    ON users.id = signatures.user_id
+    LEFT OUTER JOIN user_profiles
+    ON users.id = user_profiles.user_id
+    WHERE LOWER(user_profiles.city) = LOWER($1);
+    `,
+        [city]
+    );
+};
+
+//////////////////////////////////
+/// INSERT || UPDATE || UPSERT ///
+//////////////////////////////////
 
 exports.addSignature = (userId, canvaSignature) => {
     return db.query(
@@ -48,40 +98,13 @@ exports.addProfile = (age, city, url, userId) => {
         [age || null, city, url, userId]
     );
 };
-exports.getUserDataByEmail = (inputEmail) => {
-    return db.query(`SELECT * FROM users WHERE email=$1`, [inputEmail]);
-};
-
-exports.getSigners = () => {
-    return db.query(`
-    SELECT signatures.signature, users.first, users.last, user_profiles.age, user_profiles.city, user_profiles.url    
-    FROM signatures
-    JOIN users
-    ON users.id = signatures.user_id
-    JOIN user_profiles
-    ON users.id = user_profiles.user_id;
-    `);
-};
-
-exports.getProfile = (userId) => {
-    return db.query(
-        `
-    SELECT users.first, users.last, users.email, user_profiles.age, user_profiles.city, user_profiles.url    
-    FROM users
-    JOIN user_profiles
-    ON users.id = user_profiles.user_id
-    WHERE user_id=$1`,
-        [userId]
-    );
-};
 
 exports.updateUserWithoutPW = (first, last, email, userId) => {
     return db.query(
         `
     UPDATE users 
     SET first = $1, last=$2, email=$3
-    WHERE id = $4
-    RETURNING *
+    WHERE id = $4    
     `,
         [first, last, email, userId]
     );
@@ -120,12 +143,3 @@ exports.deleteSignature = (userId) => {
         [userId]
     );
 };
-/*
-exports.getTimestamp = () => {
-    let date = db.query(`SELECT EXTRACT (DAY FROM created) FROM signatures`);
-    date += db.query(`SELECT EXTRACT (MONTH FROM created) FROM signatures`);
-    date += db.query(`SELECT EXTRACT (YEAR FROM created) FROM signatures`);
-    return date;
-};
-// return db.query(`SELECT EXTRACT (DAY FROM created) FROM signatures`);
-*/

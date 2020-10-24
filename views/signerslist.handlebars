@@ -12,13 +12,12 @@
                     {{/if}}
 
                     {{#if age}}
-                        <span>&nbsp; |&nbsp;  {{age}}&nbsp;  | &nbsp;</span>
-                    {{else if city}}
-                        <span>&nbsp; | &nbsp;</span>
+                        <span>&nbsp; |&nbsp;  {{age}}</span>
                     {{/if}}
 
                     {{#if city}}
-                        <a class="link" href="signerslist/{{city}}"> {{city}}</a>                
+                        <span>&nbsp; | &nbsp;</span>
+                        <a class="link" href="signerslist/{{city}}">{{city}}</a>                
                     {{/if}}
                 </h2>
             {{/rows}}
