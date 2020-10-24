@@ -270,7 +270,7 @@ app.post("/petition", (req, res) => {
             message:
                 "Oops! Looks like you still haven't signed my petition. You need to use the mouse to make your signature...",
             btn: "try again",
-            href: "javascript://",
+            href: "/petition",
         });
     }
 });

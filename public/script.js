@@ -14,8 +14,8 @@ if (canvas) {
 
     canvas.addEventListener("mousedown", (e) => {
         //shorthanded without ()
-        x = e.clientX - canvas.offsetLeft;
-        y = e.clientY - canvas.offsetTop;
+        x = e.pageX - canvas.offsetLeft;
+        y = e.pageY - canvas.offsetTop;
 
         drawStart();
 
@@ -26,8 +26,8 @@ if (canvas) {
 
     canvas.addEventListener("mousemove", (e) => {
         //shorthanded without ()
-        x = e.clientX - canvas.offsetLeft;
-        y = e.clientY - canvas.offsetTop;
+        x = e.pageX - canvas.offsetLeft;
+        y = e.pageY - canvas.offsetTop;
     });
 
     canvas.addEventListener("mouseup", () => drawEnd()); //shorthanded without {}

@@ -1,6 +1,6 @@
 {{>cornerBtn logged=true}}
 <div class="cities">
-        <h1>supporters from {{city}} who need more cowbell:</h1>
+        <h1>supporters from <span class="nos">{{city}}</span>  who need more cowbell:</h1>
     <div class="container">
         <div>
             {{#rows}}
@@ -17,5 +17,6 @@
                 </h2>
             {{/rows}}
         </div>
+        <a href="/signerslist" class="myBtn">back to list</a>
     </div>
 </div>

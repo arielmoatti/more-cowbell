@@ -2,14 +2,14 @@
 <div class="thankyou">
     {{#rows}}
     <h2>
-        thank you, {{first}} {{last}} for your support! 
+        thank you, {{first}} {{last}}, for your support! 
     </h2>
     <p>with your signature below, you are a supporter of my petition</p>
     {{/rows}}    
     <img id="signature" src="{{signature}}" alt="signature">
     <div class="container">
-    <h3>Total number of supporters until now: {{numberOfSigners}}</h3>
-        <p>Want to know who else needs more cowbell? <br>click below to find out...</p>
+    <h3>total number of supporters until now: <span class="nos">&nbsp; {{numberOfSigners}}</span></h3>
+        <p>want to know who else needs more cowbell? <br>click below to find out...</p>
         <a href="/signerslist" class="myBtn">supporters</a>
         <div class="bottom">
             <a href="/profile/update" class="myBtn">update profile</a>
@@ -19,6 +19,7 @@
             </form>
         </div>
     </div>
+    {{!-- <div class="empty"></div> --}}
     {{#if message}}
             {{>msgBox}}
         {{/if}} 

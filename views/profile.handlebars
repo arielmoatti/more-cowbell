@@ -1,12 +1,12 @@
 {{>cornerBtn logged=true}}
 <div class="profile">
-    <h2>please provide some personal information</h2>
-    <h3>webite: your homepage or any favourite address</h3>
+    <h2>please provide some personal information</h2>    
     <div class="container">            
         <form method='POST'>            
             <input type='text' name='age' placeholder='Age' autocomplete='off' pattern="^[0-9]*$">
             <input type='text' name='city' placeholder='City' autocomplete='off' pattern="^[a-zA-Z ]+$">
             <input type='url' name='url' placeholder='Website' autocomplete='off' pattern="https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&amp;//=]*)">
+            <label for="url">type your homepage or a website you like.<br>Note: it will be seen by visitors of my petition</label>
             {{>csrf}}
             <button type="submit">continue</button>
         </form>

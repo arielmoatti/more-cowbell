@@ -38,6 +38,7 @@ footer {
     position: fixed;
     bottom: 0;
     width: 100%;
+    /* display: none; */
 }
 
 footer p {
@@ -50,27 +51,32 @@ footer p {
 a {
     text-decoration: none;
 }
+.empty {
+    height: 100px;
+    /* margin-bottom: 100px; */
+}
 
 .home,
 .signers,
 .thankyou,
 .login,
-.register,
+.registerRight,
 .profile,
 .update,
 .cities {
     height: 80vh;
     display: flex;
     flex-direction: column;
-    overflow: auto;
+    /* overflow: auto; */
     align-items: center;
     /* justify-items: center; */
-    /* padding: 50px; */
+    /* margin-bottom: 200px; */
 }
 
 .home,
 .signers,
 .thankyou h1,
+.cities h1,
 h2,
 p {
     text-align: center;
@@ -183,7 +189,7 @@ input {
     box-sizing: border-box;
     font-family: "Montserrat", sans-serif;
     font-size: 18px;
-    margin: 20px;
+    margin: 15px;
     width: 300px;
     text-align: center;
 }
@@ -226,4 +232,62 @@ input:-webkit-autofill {
 .link:hover {
     color: grey;
     transition: 200ms;
+}
+
+.nos {
+    color: whitesmoke;
+}
+
+.main {
+    padding-top: 20px;
+    display: flex;
+    height: 80vh;
+    /* justify-items: center; */
+}
+
+.containerLeft {
+    display: flex;
+    flex-direction: column;
+    /* background-color: wheat; */
+    width: 50%;
+    height: 100%;
+    /* overflow: hidden; */
+}
+.imgContainer {
+    /* border: 3px solid black; */
+    max-width: 100%;
+    /* overflow: hidden; */
+}
+
+.bruce {
+    margin: 30px;
+    border: 1px solid whitesmoke;
+    transform: scale(1);
+    transition: 200ms;
+}
+
+.bruce:hover {
+    transform: scale(1.1);
+}
+
+.danceGif {
+    width: 100%;
+}
+
+label {
+    color: whitesmoke;
+    opacity: 0.4;
+    font-size: 12px;
+    padding-bottom: 10px;
+}
+
+#signature {
+    margin: 10px 0px 30px 0px;
+}
+
+.iconHeader {
+    width: 50px;
+    position: absolute;
+    left: 50px;
+    top: 20px;
 }

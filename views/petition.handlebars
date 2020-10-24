@@ -1,12 +1,20 @@
 {{>cornerBtn logged=true}}
 <div class="home">
     {{#rows}}
-        <h2>Welcome, {{first}}!</h2>
-        <p>Cowbell... what a lovely sound... We definitely need more of it!</p>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Modi omnis numquam veritatis tempora recusandae. Consequatur odit debitis libero nesciunt! Inventore expedita porro repellat consequatur nihil, rerum exercitationem eveniet atque reiciendis. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Minus quas quia repellat consequuntur commodi? Ut explicabo, cupiditate facere corporis voluptates temporibus in unde nobis blanditiis quo provident odio distinctio? Quas. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae omnis dolor delectus neque ut praesentium a perferendis asperiores explicabo quidem qui exercitationem quibusdam enim, repellendus deserunt impedit corporis quam in!</p>
-        <h3>Looks likes you haven't yet signed the petition...</h3>
+        <h1>welcome to my petition, {{first}}!</h1>
     {{/rows}}
-    <h2>If you support my cause, please sign your name using the mouse</h2>
+        <a href="https://vimeo.com/406011330" target="_blank">
+        <div class="imgContainer bruce">
+            <img src="/assets/Walken-Cowbell.jpg" alt="" srcset="">
+        </div>
+        </a>
+
+        <h2>cowbell... what a lovely sound... we definitely need more of it!</h2>
+        <p>Our world is pretty dull. Bands all around are releasing songs every day, and some do appears to be having a dynamite sound, but what they really need is simply more cowbell! I am positive, that every song MUST include more
+        cowbell than what is regularly considered "enough". My petition is all about adding more cowbell to <strong>every</strong> song out there.
+        </p>
+        <h2>looks likes you haven't yet signed the petition...</h2>
+    <h3>if you believe that more cowbell is needed</a>  in our world, <br>please sign your name <small> (using the mouse)</small></h3>
     <div class="container">            
         <form method='POST'>            
             <div>
@@ -16,6 +24,7 @@
             </div>
             <button type="submit">submit</button>
         </form>
+        <div class="empty"></div>
         {{#if message}}
             {{>msgBox}}
         {{/if}}

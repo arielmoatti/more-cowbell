@@ -1,16 +1,27 @@
 {{>cornerBtn login=true}}
-<div class="login">
-    <h2>welcome back! please log in</h2>
-    <div class="container">            
-        <form method='POST'>
-            <input type='email' name='email' placeholder='Email Address' autocomplete='off'>
-            <input type='password' name='password' placeholder='Password' autocomplete='off'>            
-            {{>csrf}}
-            <button type="submit">log in</button>
-        </form>
-        <p>not yet registered? then please go ahead and <a class="link" href="/register">register now</a></p>
-        {{#if message}}
-            {{>msgBox}}
-        {{/if}}
+<div class="main">    
+    <div class="containerLeft">
+        <div class="imgContainer">
+            <img class="danceGif" src="/assets/cowbell.gif" alt="dancing Gene Frenkle">
+        </div>
+        <div class="text">
+            <p><i>" guess what! I've got a fever, and the only prescription is <b>more cowbell!</b></i> "</p>
+            <p><small>(The Bruce Dickinson, 1976)</small></p>
+        </div>
+    </div>    
+    <div class="login">
+        <h2>welcome back! please log in</h2>
+        <div class="container">            
+            <form method='POST'>
+                <input type='email' name='email' placeholder='Email Address' autocomplete='off'>
+                <input type='password' name='password' placeholder='Password' autocomplete='off'>            
+                {{>csrf}}
+                <button type="submit">log in</button>
+            </form>
+            <p>not yet registered? then please <a class="link" href="/register">register now</a></p>
+            {{#if message}}
+                {{>msgBox}}
+            {{/if}}
+        </div>
     </div>
 </div>
