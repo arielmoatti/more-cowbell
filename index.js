@@ -67,6 +67,15 @@ const checkFields = (age, url) => {
     }
 };
 
+const capitalizeCity = (city) => {
+    function capitalize(city) {
+        let capWord = city.toLowerCase();
+        return (capWord = capWord.charAt(0).toUpperCase() + capWord.slice(1));
+    }
+    let capCity = city.split(" ").map(capitalize).join(" ");
+    return capCity;
+};
+
 //~~~~ ROUTES
 app.get("/", (req, res) => {
     res.redirect("/register");
@@ -351,8 +360,7 @@ app.post("/profile", (req, res) => {
         });
     } else {
         // capitalize and lowercasing city name
-        let capCity = city.toLowerCase();
-        capCity = capCity.charAt(0).toUpperCase() + capCity.slice(1);
+        let capCity = capitalizeCity(city);
         //
 
         db.addProfile(age, capCity, url, userId)
@@ -446,17 +454,11 @@ app.post("/profile/update", (req, res) => {
                                 } //end of if password
                                 ////// update rest of profile fields //////
                                 // capitalize and lowercasing city name
-                                let capCity = city.toLowerCase();
-                                capCity =
-                                    capCity.charAt(0).toUpperCase() +
-                                    capCity.slice(1);
-                                //
+                                let capCity = capitalizeCity(city);
+
                                 db.upsertProfile(age, capCity, url, userId)
                                     .then(() => {
-                                        //
-                                        // console.log(
-                                        //     "successful update other fields"
-                                        // );
+                                        // console.log("successful update other fields");
                                     })
                                     .catch((err) => {
                                         console.log(
@@ -520,19 +522,9 @@ app.get("/signerslist/:city", (req, res) => {
         if (signed) {
             db.getSignersByCity(city)
                 .then(({ rows }) => {
-                    let titleCity;
-                    if (rows.length > 0) {
-                        // titleCity =
-                        //     rows[0].city.toLowerCase().charAt(0).toUpperCase() +
-                        //     rows[0].city.slice(1);
-                        titleCity = rows[0].city.toLowerCase();
-                        titleCity =
-                            titleCity.charAt(0).toUpperCase() +
-                            titleCity.slice(1);
-                    }
                     res.render("cities", {
                         rows,
-                        titleCity,
+                        city,
                     });
                 })
                 .catch((err) => {
