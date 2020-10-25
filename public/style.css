@@ -9,7 +9,8 @@ body {
     display: flex;
     flex-direction: column;
     position: relative;
-    min-height: 100vh;
+    height: 100%;
+    /* overflow-y: hidden; */
 }
 
 header {
@@ -18,7 +19,11 @@ header {
     text-align: center;
     padding: 10px 0px;
     position: relative;
-    /* width: 100%; */
+    /* display: flex;
+    justify-content: space-between; */
+    /* position: fixed;
+    top: 0;
+    width: 100%; */
     /* position: fixed; */
     /* min-height: 100px; */
     /* z-index: 10; */
@@ -51,8 +56,10 @@ footer p {
 a {
     text-decoration: none;
 }
+
 .empty {
-    height: 100px;
+    height: 50px;
+    /* width: 100%; */
     /* margin-bottom: 100px; */
 }
 
@@ -64,12 +71,12 @@ a {
 .profile,
 .update,
 .cities {
-    height: 80vh;
+    height: 90%;
     display: flex;
     flex-direction: column;
     /* overflow: auto; */
     align-items: center;
-    /* justify-items: center; */
+    text-align: center;
     /* margin-bottom: 200px; */
 }
 
@@ -89,6 +96,7 @@ p {
     flex-direction: column;
     align-items: center;
     width: 50vw;
+    /* height: 100vh; */
     /* padding: 10px; */
 }
 
@@ -97,6 +105,7 @@ p {
     display: flex;
     justify-content: space-around;
 }
+
 form {
     /* padding: 20px; */
     display: flex;
@@ -190,7 +199,7 @@ input {
     font-family: "Montserrat", sans-serif;
     font-size: 18px;
     margin: 15px;
-    width: 300px;
+    width: 100%;
     text-align: center;
 }
 
@@ -286,8 +295,13 @@ label {
 }
 
 .iconHeader {
+    /* margin: 10px 0 0 10px; */
     width: 50px;
     position: absolute;
     left: 50px;
     top: 20px;
+}
+
+h2.signerList {
+    font-size: 2.5vw;
 }

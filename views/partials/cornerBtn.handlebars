@@ -1,7 +1,9 @@
-{{#if login}}
-    <a href="/register" class="myBtn headerBtn">register</a>
-{{else if register}}
-    <a href="/login" class="myBtn headerBtn">log in</a>
-{{else if logged}}
-    <a href="/logout" class="myBtn headerBtn">log out</a>
-{{/if}}
+<div class="headerRight">
+    {{#if login}}
+        <a href="/register" class="myBtn headerBtn">register</a>
+    {{else if register}}
+        <a href="/login" class="myBtn headerBtn">log in</a>
+    {{else if logged}}
+        <a href="/logout" class="myBtn headerBtn">log out</a>
+    {{/if}}
+</div>

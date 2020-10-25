@@ -4,8 +4,8 @@
     <div class="container">            
         <form method='POST'>
             {{#rows}}
-                <input type='text' name='firstname' value="{{first}}" placeholder='First Name *' autocomplete='off' >
-                <input type='text' name='lastname' value="{{last}}" placeholder='Last Name *' autocomplete='off'>
+                <input type='text' name='firstname' value="{{first}}" placeholder='First Name *' autocomplete='off' pattern="^[a-zA-Z ]+$">
+                <input type='text' name='lastname' value="{{last}}" placeholder='Last Name *' autocomplete='off' pattern="^[a-zA-Z ]+$">
                 <input type='email' name='email' value="{{email}}" placeholder='Email Address *' autocomplete='off'>
                 <input type='password' name='password' placeholder='Password *' autocomplete='off'>                
                 <input type='text' name='age' value="{{age}}" placeholder='Age' autocomplete='off' pattern="^[0-9]*$">
@@ -15,7 +15,8 @@
             {{/rows}}
                 {{>csrf}}
             <button type="submit">update</button>
-        </form>        
+        </form>
+        <div class="empty"></div>        
         {{#if message}}
             {{>msgBox}}
         {{/if}}
