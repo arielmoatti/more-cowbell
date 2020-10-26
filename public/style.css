@@ -263,9 +263,8 @@ input:-webkit-autofill {
     /* overflow: hidden; */
 }
 .imgContainer {
-    /* border: 3px solid black; */
     max-width: 100%;
-    /* overflow: hidden; */
+    overflow: hidden;
 }
 
 .bruce {
@@ -303,7 +302,8 @@ label {
 }
 
 h2.signerList {
-    font-size: 3vh;
+    /* font-size: 3vw; */
+    font-size: clamp(16px, 4vw, 22px);
 }
 
 .list {

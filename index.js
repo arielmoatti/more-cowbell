@@ -46,25 +46,32 @@ app.use(express.static("./public"));
 
 // other functions
 
-const checkFields = (age, url) => {
-    let field;
+const checkFields = (age, city, url) => {
+    let fnReturn = {
+        message: "",
+        fixedUrl: "",
+    };
+
     if (isNaN(age) || age < 0) {
-        field = "you should enter a valid age (or leave the field empty)";
-        return field;
+        fnReturn.message =
+            "you should enter a valid age (or leave the field empty)";
+        return fnReturn;
+    } else if (city.startsWith("javascript:") || city.startsWith("<")) {
+        fnReturn.message = "WHAT THE HECK ARE YOU TRYING TO PULL HERE?!";
+        return fnReturn;
     } else if (url) {
-        if (!url.startsWith("http://") && !url.startsWith("https://")) {
-            if (url.startsWith("www")) {
-                field = `please add "http://" or "https://" to your address`;
-                return field;
-            } else if (url.startsWith("javascript:")) {
-                field = "WHAT THE HECK ARE YOU TRYING TO PULL HERE?!";
-                return field;
-            } else {
-                field = `make sure your address begins with "http://" or "https://"`;
-                return field;
-            }
+        if (url.startsWith("javascript:")) {
+            fnReturn.message = "WHAT THE HECK ARE YOU TRYING TO PULL HERE?!";
+            return fnReturn;
+        } else if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            fnReturn.fixedUrl = `http://${url}`;
+            return fnReturn;
+        } else {
+            fnReturn.fixedUrl = url;
+            return fnReturn;
         }
     }
+    return fnReturn;
 };
 
 const capitalizeCity = (city) => {
@@ -350,31 +357,34 @@ app.post("/profile", (req, res) => {
     const { age, city, url } = req.body;
     const { userId } = req.session;
     // checks validation of fields
-    const validation = checkFields(age, url);
-    if (validation) {
-        //returns with errors
-        res.render("profile", {
-            message: validation,
-            btn: "try again",
-            href: "javascript://",
-        });
-    } else {
-        // capitalize and lowercasing city name
-        let capCity = capitalizeCity(city);
-        //
-
-        db.addProfile(age, capCity, url, userId)
-            .then((results) => {
-                // console.log("a new profile was added!");
-                req.session.profiled = true;
-                res.redirect("/petition");
-            })
-            .catch((err) => {
-                console.log("error in POST /profile", err);
-                res.send(
-                    "<h1>Server error: profile could NOT be added to db</h1>"
-                );
+    const fnReturn = checkFields(age, city, url);
+    if (fnReturn) {
+        if (fnReturn.message) {
+            let message = fnReturn.message;
+            //returns with errors
+            res.render("profile", {
+                message,
+                btn: "try again",
+                href: "javascript://",
             });
+        } else {
+            // capitalize and lowercasing city name
+            let capCity = capitalizeCity(city);
+            //
+
+            db.addProfile(age, capCity, fnReturn.fixedUrl, userId)
+                .then((results) => {
+                    // console.log("a new profile was added!");
+                    req.session.profiled = true;
+                    res.redirect("/petition");
+                })
+                .catch((err) => {
+                    console.log("error in POST /profile", err);
+                    res.send(
+                        "<h1>Server error: profile could NOT be added to db</h1>"
+                    );
+                });
+        }
     }
 });
 
@@ -402,107 +412,115 @@ app.post("/profile/update", (req, res) => {
     const { firstname, lastname, email, password, age, city, url } = req.body;
     const { userId, userEmail } = req.session;
     if (firstname !== "" && lastname !== "" && email !== "") {
-        const validation = checkFields(age, url);
-        if (validation) {
-            //returns with errors
-            res.render("profile", {
-                message: validation,
-                btn: "try again",
-                href: "/profile/update",
-            });
-        } else {
-            //existing email validation
-            db.getUserDataByEmail(email)
-                .then(({ rows }) => {
-                    if (rows.length === 0 || rows[0].email === userEmail) {
-                        // email is good to use!
-                        db.updateUserWithoutPW(
-                            firstname,
-                            lastname,
-                            email,
-                            userId
-                        )
-                            .then(() => {
-                                //check user also changed password
-                                if (password) {
-                                    hash(password)
-                                        .then((hashedPw) => {
-                                            db.updateUserPassword(
-                                                hashedPw,
-                                                userId
-                                            )
-                                                .then(() => {}) //end of updateUserPassword()
-                                                .catch((err) => {
-                                                    console.log(
-                                                        "error in POST /update updateUserPassword()",
-                                                        err
-                                                    );
-                                                    res.send(
-                                                        "<h1>Server error: user could NOT update password in db</h1>"
-                                                    );
-                                                });
-                                        }) //end of hash()
+        const fnReturn = checkFields(age, city, url);
+        if (fnReturn) {
+            if (fnReturn.message) {
+                let message = fnReturn.message;
+                //returns with errors
+                res.render("profile", {
+                    message,
+                    btn: "try again",
+                    href: "/profile/update",
+                });
+            } else {
+                //existing email validation
+                db.getUserDataByEmail(email)
+                    .then(({ rows }) => {
+                        if (rows.length === 0 || rows[0].email === userEmail) {
+                            // email is good to use!
+                            db.updateUserWithoutPW(
+                                firstname,
+                                lastname,
+                                email,
+                                userId
+                            )
+                                .then(() => {
+                                    //check user also changed password
+                                    if (password) {
+                                        hash(password)
+                                            .then((hashedPw) => {
+                                                db.updateUserPassword(
+                                                    hashedPw,
+                                                    userId
+                                                )
+                                                    .then(() => {}) //end of updateUserPassword()
+                                                    .catch((err) => {
+                                                        console.log(
+                                                            "error in POST /update updateUserPassword()",
+                                                            err
+                                                        );
+                                                        res.send(
+                                                            "<h1>Server error: user could NOT update password in db</h1>"
+                                                        );
+                                                    });
+                                            }) //end of hash()
+                                            .catch((err) => {
+                                                console.log(
+                                                    "error is POST /update hash()",
+                                                    err
+                                                );
+                                                res.send(
+                                                    "<h1>Server error: your password could NOT be hashed</h1>"
+                                                );
+                                            });
+                                    } //end of if password
+                                    ////// update rest of profile fields //////
+                                    // capitalize and lowercasing city name
+                                    let capCity = capitalizeCity(city);
+
+                                    db.upsertProfile(
+                                        age,
+                                        capCity,
+                                        fnReturn.fixedUrl,
+                                        userId
+                                    )
+                                        .then(() => {
+                                            // console.log("successful update other fields");
+                                        })
                                         .catch((err) => {
                                             console.log(
-                                                "error is POST /update hash()",
+                                                "error in POST /update upsertUser()",
                                                 err
                                             );
                                             res.send(
-                                                "<h1>Server error: your password could NOT be hashed</h1>"
+                                                "<h1>Server error: user could NOT update other fields in db</h1>"
                                             );
                                         });
-                                } //end of if password
-                                ////// update rest of profile fields //////
-                                // capitalize and lowercasing city name
-                                let capCity = capitalizeCity(city);
-
-                                db.upsertProfile(age, capCity, url, userId)
-                                    .then(() => {
-                                        // console.log("successful update other fields");
-                                    })
-                                    .catch((err) => {
-                                        console.log(
-                                            "error in POST /update upsertUser()",
-                                            err
-                                        );
-                                        res.send(
-                                            "<h1>Server error: user could NOT update other fields in db</h1>"
-                                        );
+                                    //
+                                    //
+                                    res.render("update", {
+                                        message:
+                                            "your profile was successfully updated",
+                                        btn: "continue",
+                                        href: "/petition",
                                     });
-                                //
-                                //
-                                res.render("update", {
-                                    message:
-                                        "your profile was successfully updated",
-                                    btn: "continue",
-                                    href: "/petition",
+                                })
+                                .catch((err) => {
+                                    console.log(
+                                        "error in POST /update updateUserWithoutPW()",
+                                        err
+                                    );
+                                    res.send(
+                                        "<h1>Server error: user profile could NOT be updates in db</h1>"
+                                    );
                                 });
-                            })
-                            .catch((err) => {
-                                console.log(
-                                    "error in POST /update updateUserWithoutPW()",
-                                    err
-                                );
-                                res.send(
-                                    "<h1>Server error: user profile could NOT be updates in db</h1>"
-                                );
+                        } else {
+                            //of if block (email is free)
+                            // console.log("email has been already used");
+                            res.render("update", {
+                                message: "this email is already in use",
+                                btn: "try again",
+                                href: "/profile/update",
                             });
-                    } else {
-                        //of if block (email is free)
-                        // console.log("email has been already used");
-                        res.render("update", {
-                            message: "this email is already in use",
-                            btn: "try again",
-                            href: "/profile/update",
-                        });
-                    }
-                }) //end of getUserDataByEmail()
-                .catch((err) => {
-                    console.log("error is POST /update checkEmail", err);
-                    res.send(
-                        "<h1>Server error: your email could NOT be verified</h1>"
-                    );
-                });
+                        }
+                    }) //end of getUserDataByEmail()
+                    .catch((err) => {
+                        console.log("error is POST /update checkEmail", err);
+                        res.send(
+                            "<h1>Server error: your email could NOT be verified</h1>"
+                        );
+                    });
+            } //closes fields validation
         } //closes fields validation
     } else {
         //of if block (firstname, lastname, email, password)
@@ -555,7 +573,7 @@ app.post("/delete/signature", (req, res) => {
     if (userId) {
         db.deleteSignature(userId)
             .then(() => {
-                console.log("signature deleted!");
+                // console.log("signature deleted!");
                 req.session.signed = null;
                 // res.redirect("/petition");
                 res.render("thankyou", {
